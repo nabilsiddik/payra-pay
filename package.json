@@ -5,7 +5,10 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "mongoose": "^8.16.5",
-    "src": "npx ts-node-dev --respawn src/server.ts"
+    "zod": "^4.0.10"
+  },
+  "scripts": {
+    "dev": "npx ts-node-dev --respawn src/server.ts"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
