@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { createUserZodSchema } from "./user.validations";
 import { validateRequest } from "../../app/middlewares/validateRequest";
 import { UserControllers } from "./user.controllers";
