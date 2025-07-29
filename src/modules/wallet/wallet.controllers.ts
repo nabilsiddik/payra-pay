@@ -20,6 +20,23 @@ const addMoneyToWallet = catchAsync(async(req: Request, res: Response, next: Nex
     })
 })
 
+// Withdraw money from wallet
+const withdrawMoneyFromWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const payload = req.body
+    const decodedToken = req.user 
+
+    const result = await WalletServices.withdrawMoneyFromWallet(req, payload, decodedToken as JwtPayload)
+
+    sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: 'Successfully withdraw money from wallet.',
+        data: result
+    })
+})
+
+
 export const WalletControllers = {
-    addMoneyToWallet
+    addMoneyToWallet,
+    withdrawMoneyFromWallet
 }
