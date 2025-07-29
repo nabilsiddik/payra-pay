@@ -1,9 +1,11 @@
-import { IAuthProvider, IUser, Provider } from "./user.interfaces"
+import { IAuthProvider, IUser, Provider, Role } from "./user.interfaces"
 import User from "./user.models"
 import statusCodes from 'http-status-codes';
 import bcrypt from 'bcryptjs';
 import { enVars } from "../../app/config/env";
 import AppError from "../../app/errorHelpers/appError";
+import { WALLET_STATUS } from "../wallet/wallet.interfaces";
+import Wallet from "../wallet/wallet.models";
 
 // Service logics for creating a new user
 const createUser = async(payload: IUser) => {
@@ -38,7 +40,23 @@ const createUser = async(payload: IUser) => {
     const newUser = await User.create(user)
     newUser.save()
 
-    return newUser
+
+    // Creating a wallet automatically for users and agents
+    const walletPayload = {
+        user: newUser._id,
+        balance: 50,
+        status: WALLET_STATUS.ACTIVE
+    }
+
+    let wallet = null
+    if(newUser.role !== Role.ADMIN){
+        const wallet = await Wallet.create(walletPayload)
+    }
+
+    return {
+        user: newUser,
+        wallet
+    }
 }
 
 export const UserServices = {
