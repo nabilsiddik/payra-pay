@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export enum IsActive {
     ACTIVE = 'ACTIVE',
     INACTIVE = 'INACTIVE',
@@ -21,12 +23,13 @@ export interface IAuthProvider{
 }
 
 export interface IUser{
+    _id?: Types.ObjectId,
     name: string;
     email: string;
     phone: string,
-    password?: string;
-    picture?: string;
-    address?: string;
+    password?: string | null;
+    picture?: string | null;
+    address?: string | null;
     isDeleted?: boolean;
     isVerified?: boolean;
     isActive?: IsActive;

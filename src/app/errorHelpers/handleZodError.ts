@@ -8,7 +8,7 @@ export const handleZodError = (error: any, errorSources: any) => {
     error.issues.forEach((issue: any) => {
         errorSources.push({
             path: issue.path[issue.path.length - 1],
-            message: issue.mesage
+            message: issue.message
         })
     })
 
