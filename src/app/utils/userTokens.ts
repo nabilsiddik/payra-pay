@@ -2,7 +2,7 @@ import { IUser } from "../../modules/user/user.interfaces";
 import { enVars } from "../config/env";
 import { generateToken } from "./jwt";
 
-export const crateUserTokens = (user: Partial<IUser>) => {
+export const createUserTokens = (user: Partial<IUser>) => {
     const jwtPayload = {
         userId: user._id,
         email: user.email,
