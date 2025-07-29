@@ -22,6 +22,12 @@ const transactionSchema = new Schema({
         enum: Object.values(TRANSACTION_STATUS),
         default: TRANSACTION_STATUS.PENDING
     },
+    numberFrom: {
+        type: String,
+    },
+    numberTo: {
+        type: String,
+    },
     fee: {
         type: Number,
     },

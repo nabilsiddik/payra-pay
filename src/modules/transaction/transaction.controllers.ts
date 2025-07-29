@@ -41,7 +41,7 @@ const sendMoneyToAnotherWallet = catchAsync(async(req: Request, res: Response, n
     const payload = req.body
     const decodedToken = req.user 
 
-    const result = await TransactionServices.withdrawMoneyFromWallet(req, payload, decodedToken as JwtPayload)
+    const result = await TransactionServices.sendMoneyToAnotherWallet(req, payload, decodedToken as JwtPayload)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,

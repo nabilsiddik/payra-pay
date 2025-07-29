@@ -17,6 +17,8 @@ export interface ITransaction{
     type: TRANSACTION_TYPES,
     status: TRANSACTION_STATUS,
     amount: number,
+    numberFrom?: string,
+    numberTo?: string,
     fee?: number,
     commision?: number
 }
