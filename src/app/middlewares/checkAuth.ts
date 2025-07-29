@@ -25,10 +25,10 @@ export const checkAuth = (...authRoles: string[]) => async(req: Request, res: Re
             throw new AppError(StatusCodes.BAD_REQUEST, 'User does not exist.')
         }
 
-        // If user is not verified
-        if(!existingUser.isVerified){
-            throw new AppError(StatusCodes.BAD_REQUEST, 'User is not verified.')
-        }
+        // // If user is not verified
+        // if(!existingUser.isVerified){
+        //     throw new AppError(StatusCodes.BAD_REQUEST, 'User is not verified.')
+        // }
         
 
         // If user is blocked or inactive
