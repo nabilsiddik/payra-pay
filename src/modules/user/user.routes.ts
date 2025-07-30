@@ -9,5 +9,7 @@ export const userRouter = Router()
 
 // Register a new user
 userRouter.post("/register", validateRequest(createUserZodSchema), UserControllers.createUser);
-
+// get all users
 userRouter.get("/", checkAuth(Role.ADMIN), UserControllers.getAllUsers);
+// get all agents
+userRouter.get("/agents", checkAuth(Role.ADMIN), UserControllers.getAllAgents);

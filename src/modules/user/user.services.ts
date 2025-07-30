@@ -63,7 +63,14 @@ const getAllUsers = async() => {
     return users
 }
 
+// Get all agents
+const getAllAgents = async() => {
+    const users = await User.find({role: Role.AGENT}).select('-password')
+    return users
+}
+
 export const UserServices = {
     createUser,
-    getAllUsers
+    getAllUsers,
+    getAllAgents
 }

@@ -297,7 +297,7 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
         throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
     }
 
-    // User from send money
+    // find cash out user
     const cashOutUser = await User.findById(userId)
 
     if (!cashOutUser) {

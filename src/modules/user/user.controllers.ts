@@ -29,8 +29,22 @@ export const getAllUsers = catchAsync(async(req: Request, res: Response, next: N
     })
 })
 
+// Get all agents
+export const getAllAgents = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const result = await UserServices.getAllAgents()
+
+    sendResponse(res, {
+        statusCode: statusCodes.CREATED,
+        success: true,
+        message: 'All agents retrived successfully.',
+        data: result
+    })
+})
+
+
 
 export const UserControllers = {
     createUser,
-    getAllUsers
+    getAllUsers,
+    getAllAgents
 }
