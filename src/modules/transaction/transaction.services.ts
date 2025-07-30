@@ -10,6 +10,13 @@ import Transaction from "./transaction.models";
 import User from "../user/user.models";
 import { Role } from "../user/user.interfaces";
 
+
+// get all transactions
+const getAllTransactions = async () => {
+    const transactions = await Transaction.find()
+    return transactions
+}
+
 // Business logics of add money to wallet
 const addMoneyToWallet = async (req: Request, payload: Partial<IWallet>, decodedToken: JwtPayload) => {
     // amount to be added
@@ -378,5 +385,6 @@ export const TransactionServices = {
     sendMoneyToAnotherWallet,
     getAllTransactionHistory,
     cashIn,
-    cashOut
+    cashOut,
+    getAllTransactions
 }

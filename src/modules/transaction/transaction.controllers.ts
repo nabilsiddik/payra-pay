@@ -6,6 +6,18 @@ import StatusCodes from 'http-status-codes'
 import { TransactionServices } from "./transaction.services"
 import AppError from "../../app/errorHelpers/appError"
 
+// Get all transactions
+const getAllTransactions = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const result = await TransactionServices.getAllTransactions()
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Successfully retrived all transactions.',
+        data: result
+    })
+})
+
 // Add money to wallet
 const addMoneyToWallet = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body
@@ -109,5 +121,6 @@ export const TransactionControllers = {
     sendMoneyToAnotherWallet,
     getAllTransactionHistory,
     cashIn,
-    cashOut
+    cashOut,
+    getAllTransactions
 }

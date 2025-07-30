@@ -5,6 +5,12 @@ import { WalletControllers } from "./wallet.controllers";
 
 export const walletRouter = Router()
 
-// Add money to wallet
+// Get all wallets
 walletRouter.get('/', checkAuth(Role.ADMIN), WalletControllers.getAllWallets)
+
+// Block a wallet
+walletRouter.post('/block/:id', checkAuth(Role.ADMIN), WalletControllers.blockWallet)
+
+// Unblock a wallet
+walletRouter.post('/unblock/:id', checkAuth(Role.ADMIN), WalletControllers.unblockWallet)
 

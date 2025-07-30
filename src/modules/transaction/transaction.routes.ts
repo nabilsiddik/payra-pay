@@ -22,3 +22,8 @@ transactionRouter.post('/cash-in', checkAuth(Role.AGENT), TransactionControllers
 
 // Cash out from any user wallet by agent only
 transactionRouter.post('/cash-out', checkAuth(Role.USER), TransactionControllers.cashOut)
+
+// Get all transactions
+transactionRouter.get('/', checkAuth(Role.ADMIN), TransactionControllers.getAllTransactions)
+
+

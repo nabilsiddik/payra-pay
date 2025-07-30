@@ -16,7 +16,34 @@ const getAllWallets = catchAsync(async(req: Request, res: Response, next: NextFu
     })
 })
 
+// Block wallet
+const blockWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const result = await WalletServices.blockWallet(req)
+
+    sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: 'Walled blocked.',
+        data: result
+    })
+})
+
+
+// Unblock wallet
+const unblockWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const result = await WalletServices.unblockWallet(req)
+
+    sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: 'Walled unblocked.',
+        data: result
+    })
+})
+
 
 export const WalletControllers = {
-    getAllWallets
+    getAllWallets,
+    blockWallet,
+    unblockWallet
 }
