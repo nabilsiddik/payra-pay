@@ -6,6 +6,11 @@ export enum AgentRequestStatus {
     SUSPENDED = 'SUSPENDED'
 }
 
+
+export interface HandleAgentPayloadType{
+    status: AgentRequestStatus
+}
+
 export interface IAgentRequest{
     user: Types.ObjectId,
     status?: AgentRequestStatus,
