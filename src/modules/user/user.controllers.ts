@@ -3,6 +3,7 @@ import statusCodes from 'http-status-codes'
 import { UserServices } from "./user.services"
 import { catchAsync } from "../../app/errorHelpers/catchAsync"
 import { sendResponse } from "../../app/utils/sendResponse"
+import { JwtPayload } from "jsonwebtoken"
 
 // User registration
 export const createUser = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
@@ -42,9 +43,24 @@ export const getAllAgents = catchAsync(async(req: Request, res: Response, next: 
 })
 
 
+// Become an agent
+export const becomeAnAgent = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const result = await UserServices.becomeAnAgent(req.user as JwtPayload)
+
+    sendResponse(res, {
+        statusCode: statusCodes.CREATED,
+        success: true,
+        message: 'Become an agent request is pending. Once approved from Admin you will be an agent. Thank you.',
+        data: result
+    })
+})
+
+
+
 
 export const UserControllers = {
     createUser,
     getAllUsers,
-    getAllAgents
+    getAllAgents,
+    becomeAnAgent
 }

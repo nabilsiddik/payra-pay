@@ -13,3 +13,5 @@ userRouter.post("/register", validateRequest(createUserZodSchema), UserControlle
 userRouter.get("/", checkAuth(Role.ADMIN), UserControllers.getAllUsers);
 // get all agents
 userRouter.get("/agents", checkAuth(Role.ADMIN), UserControllers.getAllAgents);
+// apply to become agent
+userRouter.post("/agents/become-agent", checkAuth(Role.USER), UserControllers.becomeAnAgent);
