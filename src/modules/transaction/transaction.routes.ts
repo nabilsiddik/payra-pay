@@ -13,3 +13,9 @@ transactionRouter.post('/withdraw-money', checkAuth(...Object.values(Role)), Tra
 
 // Send money to another wallet
 transactionRouter.post('/send-money', checkAuth(...Object.values(Role)), TransactionControllers.sendMoneyToAnotherWallet)
+
+// view all transaction history
+transactionRouter.get('/history', checkAuth(...Object.values(Role)), TransactionControllers.getAllTransactionHistory)
+
+// Cash in to any user wallet by agent only
+transactionRouter.post('/cash-in', checkAuth(Role.AGENT), TransactionControllers.cashIn)

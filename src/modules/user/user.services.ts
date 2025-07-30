@@ -48,10 +48,7 @@ const createUser = async(payload: IUser) => {
         status: WALLET_STATUS.ACTIVE
     }
 
-    let wallet = null
-    if(newUser.role !== Role.ADMIN){
-        const wallet = await Wallet.create(walletPayload)
-    }
+    const wallet = await Wallet.create(walletPayload)
 
     return {
         user: newUser,

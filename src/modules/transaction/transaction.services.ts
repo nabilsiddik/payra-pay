@@ -2,10 +2,10 @@ import { Request } from "express";
 import AppError from "../../app/errorHelpers/appError";
 import StatusCodes from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { IWallet } from "../wallet/wallet.interfaces";
 import Wallet from "../wallet/wallet.models";
-import { ITransaction, TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interfaces";
+import { ICashIn, ITransaction, TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interfaces";
 import Transaction from "./transaction.models";
 import User from "../user/user.models";
 
@@ -183,8 +183,115 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
 
 }
 
+
+// Get all transaction history
+const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload) => {
+    
+    const userId = decodedToken.userId
+
+    const user = await User.findById(userId)
+
+    if(!user){
+        throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
+    }
+
+    // convert userId to an object id
+    const objectUserId = new Types.ObjectId(userId)
+    // gett logged in users transactions
+    const transactions = await Transaction.find({user: objectUserId})
+
+    if(!transactions){
+        throw new AppError(StatusCodes.BAD_REQUEST, 'No transaction available.')
+    }
+
+    return transactions
+
+}
+
+
+
+// Cash in to any user wallet by an agent only
+const cashIn = async (payload: ICashIn, decodedToken: JwtPayload) => {
+    const { phone, amount } = payload
+    const userId = decodedToken.userId
+
+    if (!userId) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
+    }
+
+    // User from send money
+    const userAgent = await User.findById(userId)
+
+    if (!userAgent) {
+        throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not user agent.')
+    }
+
+    // find user agent wallet
+    const objectAgentId = new mongoose.Types.ObjectId(userId)
+    const userAgentWallet = await Wallet.findOne({ user: objectAgentId })
+
+    if (!userAgentWallet) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Agent wallet not found.')
+    }
+
+    // check if the cash in amount available to agent wallet or not
+    if(userAgentWallet.balance < amount){
+        throw new AppError(StatusCodes.NOT_FOUND, 'Insuficient balance in agent wallet.')
+    }
+
+
+
+    // find the user to cash in
+    const userToCashIn = await User.findOne({ phone })
+
+    if (!userToCashIn) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'User not found while cash in.')
+    }
+
+    // find user wallet to cash in
+    const toUserWallet = await Wallet.findOne({ user: userToCashIn._id })
+
+    if (!toUserWallet) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'User wallet not found while cash in.')
+    }
+
+
+    // Minus balance from current user wallet
+    userAgentWallet.balance -= Number(amount)
+    await userAgentWallet.save()
+
+    // Add balance to user wallet
+    toUserWallet.balance += Number(amount)
+    await toUserWallet.save()
+
+
+    // Create transaction
+    const transactionPayload = {
+        user: objectAgentId,
+        type: TRANSACTION_TYPES.CASH_IN,
+        amount: amount,
+        numberFrom: userAgent.phone,
+        numberTo: userToCashIn.phone,
+        status: TRANSACTION_STATUS.COMPLETED,
+    }
+
+    const transaction = await Transaction.create(transactionPayload)
+
+    return {
+        userAgentWallet,
+        toUserWallet,
+        transaction
+    }
+
+
+}
+
+
+
 export const TransactionServices = {
     addMoneyToWallet,
     withdrawMoneyFromWallet,
-    sendMoneyToAnotherWallet
+    sendMoneyToAnotherWallet,
+    getAllTransactionHistory,
+    cashIn
 }
