@@ -4,6 +4,7 @@ import { UserServices } from "./user.services"
 import { catchAsync } from "../../app/errorHelpers/catchAsync"
 import { sendResponse } from "../../app/utils/sendResponse"
 
+// User registration
 export const createUser = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const payload = req.body
     const newUser = await UserServices.createUser(payload)
@@ -16,7 +17,20 @@ export const createUser = catchAsync(async(req: Request, res: Response, next: Ne
     })
 })
 
+// Get all users
+export const getAllUsers = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const result = await UserServices.getAllUsers()
+
+    sendResponse(res, {
+        statusCode: statusCodes.CREATED,
+        success: true,
+        message: 'All user retrived successfully.',
+        data: result
+    })
+})
+
 
 export const UserControllers = {
-    createUser
+    createUser,
+    getAllUsers
 }

@@ -56,6 +56,14 @@ const createUser = async(payload: IUser) => {
     }
 }
 
+
+// Get all users
+const getAllUsers = async() => {
+    const users = await User.find().select('-password')
+    return users
+}
+
 export const UserServices = {
-    createUser
+    createUser,
+    getAllUsers
 }
