@@ -5,9 +5,10 @@ import { JwtPayload } from "jsonwebtoken";
 import mongoose, { Types } from "mongoose";
 import { IWallet } from "../wallet/wallet.interfaces";
 import Wallet from "../wallet/wallet.models";
-import { ICashIn, ITransaction, TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interfaces";
+import { ICashIn, ICashOutPayload, ITransaction, TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interfaces";
 import Transaction from "./transaction.models";
 import User from "../user/user.models";
+import { Role } from "../user/user.interfaces";
 
 // Business logics of add money to wallet
 const addMoneyToWallet = async (req: Request, payload: Partial<IWallet>, decodedToken: JwtPayload) => {
@@ -287,11 +288,95 @@ const cashIn = async (payload: ICashIn, decodedToken: JwtPayload) => {
 }
 
 
+// Cash out from any user wallet by an agent only
+const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
+    const { agentPhoneNumber, cashOutAmount } = payload
+    const userId = decodedToken.userId
+
+    if (!userId) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
+    }
+
+    // User from send money
+    const cashOutUser = await User.findById(userId)
+
+    if (!cashOutUser) {
+        throw new AppError(StatusCodes.UNAUTHORIZED, 'Cash out user not found.')
+    }
+
+    // find cash out user wallet
+    const objectAgentId = new mongoose.Types.ObjectId(userId)
+    const cashOutUserWallet = await Wallet.findOne({ user: objectAgentId })
+
+    if (!cashOutUserWallet) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Cash out user wallet not found.')
+    }
+
+    
+    // check if the cash out amount actually available to the users wallet or not
+    if(cashOutUserWallet.balance < cashOutAmount){
+        throw new AppError(StatusCodes.NOT_FOUND, 'Cash out amount is not available to users wallet.')
+    }
+
+
+    // find the user agent to cash out
+    const userAgent = await User.findOne({ phone: agentPhoneNumber })
+
+    if (!userAgent) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'User agent not found while cash out.')
+    }
+
+    if(userAgent.role !== Role.AGENT){
+        throw new AppError(StatusCodes.BAD_REQUEST, 'User is not an Agent.')
+    }
+
+    // find agent wallet to cash out
+    const agentWallet = await Wallet.findOne({ user: userAgent._id })
+
+    if (!agentWallet) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'User agent wallet not found while cash out.')
+    }
+
+
+
+    // Minus balance from current user wallet
+    cashOutUserWallet.balance -= Number(cashOutAmount)
+    await cashOutUserWallet.save()
+
+    // Add balance to user wallet
+    agentWallet.balance += Number(cashOutAmount)
+    await agentWallet.save()
+
+
+    // Create transaction
+    const transactionPayload = {
+        user: objectAgentId,
+        type: TRANSACTION_TYPES.CASH_OUT,
+        amount: cashOutAmount,
+        numberFrom: cashOutUser.phone,
+        numberTo: userAgent.phone,
+        status: TRANSACTION_STATUS.COMPLETED,
+    }
+
+    const transaction = await Transaction.create(transactionPayload)
+
+    return {
+        cashOutUserWallet,
+        agentWallet,
+        transaction
+    }
+
+
+}
+
+
+
 
 export const TransactionServices = {
     addMoneyToWallet,
     withdrawMoneyFromWallet,
     sendMoneyToAnotherWallet,
     getAllTransactionHistory,
-    cashIn
+    cashIn,
+    cashOut
 }

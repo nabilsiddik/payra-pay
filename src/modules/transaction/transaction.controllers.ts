@@ -87,10 +87,27 @@ const cashIn = catchAsync(async (req: Request, res: Response, next: NextFunction
     })
 })
 
+
+// Cash out from any user wallet by an agent only
+const cashOut = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const decodedToken = req.user
+
+    const result = await TransactionServices.cashOut(req.body, decodedToken as JwtPayload)
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Cash out successfull.',
+        data: result
+    })
+})
+
 export const TransactionControllers = {
     addMoneyToWallet,
     withdrawMoneyFromWallet,
     sendMoneyToAnotherWallet,
     getAllTransactionHistory,
-    cashIn
+    cashIn,
+    cashOut
 }

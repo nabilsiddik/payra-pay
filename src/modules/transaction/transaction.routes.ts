@@ -19,3 +19,6 @@ transactionRouter.get('/history', checkAuth(...Object.values(Role)), Transaction
 
 // Cash in to any user wallet by agent only
 transactionRouter.post('/cash-in', checkAuth(Role.AGENT), TransactionControllers.cashIn)
+
+// Cash out from any user wallet by agent only
+transactionRouter.post('/cash-out', checkAuth(Role.USER), TransactionControllers.cashOut)
