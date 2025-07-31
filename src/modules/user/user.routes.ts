@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUserZodSchema } from "./user.validations";
+import { createUserZodSchema, updateUserZodSchema } from "./user.validations";
 import { validateRequest } from "../../app/middlewares/validateRequest";
 import { UserControllers } from "./user.controllers";
 import { checkAuth } from "../../app/middlewares/checkAuth";
@@ -9,6 +9,8 @@ export const userRouter = Router()
 
 // Register a new user
 userRouter.post("/register", validateRequest(createUserZodSchema), UserControllers.createUser);
+// Update user
+userRouter.patch("/", validateRequest(updateUserZodSchema), checkAuth(...Object.values(Role)), UserControllers.updateUser);
 // get all users
 userRouter.get("/", checkAuth(Role.ADMIN), UserControllers.getAllUsers);
 // get all agents

@@ -4,13 +4,14 @@ import statusCodes from 'http-status-codes';
 import bcrypt from 'bcryptjs';
 import { enVars } from "../../app/config/env";
 import AppError from "../../app/errorHelpers/appError";
-import { WALLET_STATUS } from "../wallet/wallet.interfaces";
+import { CurentUser, WALLET_STATUS } from "../wallet/wallet.interfaces";
 import Wallet from "../wallet/wallet.models";
 import { JwtPayload } from "jsonwebtoken";
 import StatusCodes from "http-status-codes";
 import AgentRequest from "../agentRequest/agentRequest.models";
 import { AgentRequestStatus, IAgentRequest } from "../agentRequest/agentRequest.interfaces";
 import { Types } from "mongoose";
+import { Request } from "express";
 
 // Service logics for creating a new user
 const createUser = async (payload: IUser) => {
@@ -62,6 +63,21 @@ const createUser = async (payload: IUser) => {
 }
 
 
+// Update User
+const updateUser = async (currentUser: CurentUser, payload: Partial<IUser>) => {
+    const logedInUser = await User.findById(currentUser.userId)
+
+    // If logedIn user not available
+    if(!logedInUser){
+        throw new AppError(StatusCodes.NOT_FOUND, 'Logged in user not found.')
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(currentUser.userId, payload, {new: true})
+
+    return updatedUser
+}
+
+
 // Get all users
 const getAllUsers = async () => {
     const users = await User.find().select('-password')
@@ -108,6 +124,7 @@ const becomeAnAgent = async (payload: JwtPayload) => {
 
 export const UserServices = {
     createUser,
+    updateUser,
     getAllUsers,
     getAllAgents,
     becomeAnAgent

@@ -156,6 +156,11 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
         throw new AppError(StatusCodes.NOT_FOUND, 'Current user wallet not available.')
     }
 
+    // check if insufficient balance
+    if (currentUserWallet.balance < Number(amount)) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Insufficient balance to withdraw.')
+    }
+
     // Check if wallet is blocked or deactivated
     if (currentUserWallet.status === WALLET_STATUS.BLOCKED || currentUserWallet.status === WALLET_STATUS.DEACTIVATED) {
         throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${currentUserWallet.status}`)
@@ -361,7 +366,7 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
 
     // check if the cash out amount actually available to the users wallet or not
     if (cashOutUserWallet.balance < cashOutAmount) {
-        throw new AppError(StatusCodes.NOT_FOUND, 'Cash out amount is not available to users wallet.')
+        throw new AppError(StatusCodes.NOT_FOUND, 'Insufficient balance to cash out.')
     }
 
 

@@ -4,6 +4,7 @@ import { UserServices } from "./user.services"
 import { catchAsync } from "../../app/errorHelpers/catchAsync"
 import { sendResponse } from "../../app/utils/sendResponse"
 import { JwtPayload } from "jsonwebtoken"
+import { CurentUser } from "../wallet/wallet.interfaces"
 
 // User registration
 export const createUser = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
@@ -15,6 +16,20 @@ export const createUser = catchAsync(async(req: Request, res: Response, next: Ne
         success: true,
         message: 'New user created.',
         data: newUser
+    })
+})
+
+// Update user
+export const updateUser = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+
+    const payload = req.body
+    const result = await UserServices.updateUser(req.user as CurentUser, payload)
+
+    sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: 'User updated.',
+        data: result
     })
 })
 
@@ -60,6 +75,7 @@ export const becomeAnAgent = catchAsync(async(req: Request, res: Response, next:
 
 export const UserControllers = {
     createUser,
+    updateUser,
     getAllUsers,
     getAllAgents,
     becomeAnAgent
