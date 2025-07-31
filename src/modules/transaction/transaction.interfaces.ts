@@ -11,7 +11,8 @@ export enum TRANSACTION_TYPES{
 export enum TRANSACTION_STATUS{
     PENDING = 'PENDING',
     COMPLETED = 'COMPLETED',
-    CANCLED = 'CANCLED'
+    CANCLED = 'CANCLED',
+    REVERSED = 'REVERSED'
 }
 
 export interface ICashIn{

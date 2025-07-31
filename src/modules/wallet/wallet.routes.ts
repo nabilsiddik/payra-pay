@@ -14,3 +14,9 @@ walletRouter.patch('/block/:id', checkAuth(Role.ADMIN), WalletControllers.blockW
 // Unblock a wallet
 walletRouter.patch('/unblock/:id', checkAuth(Role.ADMIN), WalletControllers.unblockWallet)
 
+// Deactivate own wallet
+walletRouter.patch('/deactivate', checkAuth(...Object.values(Role)), WalletControllers.deactivateOwnWallet)
+
+// Activate own wallet
+walletRouter.patch('/activate', checkAuth(...Object.values(Role)), WalletControllers.activateOwnWallet)
+

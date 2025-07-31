@@ -3,6 +3,8 @@ import { catchAsync } from "../../app/errorHelpers/catchAsync";
 import { sendResponse } from "../../app/utils/sendResponse";
 import statusCodes from 'http-status-codes'
 import { WalletServices } from "./wallet.services";
+import { JwtPayload } from "jsonwebtoken";
+import { CurentUser } from "./wallet.interfaces";
 
 // Get all wallets
 const getAllWallets = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
@@ -42,8 +44,37 @@ const unblockWallet = catchAsync(async(req: Request, res: Response, next: NextFu
 })
 
 
+
+// Deactivate own wallet
+const deactivateOwnWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const result = await WalletServices.deactivateOwnWallet(req.user as CurentUser)
+
+    sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: 'Walled deactivated.',
+        data: result
+    })
+})
+
+
+// Deactivate own wallet
+const activateOwnWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const result = await WalletServices.activateOwnWallet(req.user as CurentUser)
+
+    sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: 'Walled activated.',
+        data: result
+    })
+})
+
+
 export const WalletControllers = {
     getAllWallets,
     blockWallet,
-    unblockWallet
+    unblockWallet,
+    deactivateOwnWallet,
+    activateOwnWallet
 }
