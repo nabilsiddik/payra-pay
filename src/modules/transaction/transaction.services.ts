@@ -3,7 +3,7 @@ import AppError from "../../app/errorHelpers/appError";
 import StatusCodes from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
 import mongoose, { Types } from "mongoose";
-import { IWallet } from "../wallet/wallet.interfaces";
+import { IWallet, WALLET_STATUS } from "../wallet/wallet.interfaces";
 import Wallet from "../wallet/wallet.models";
 import { ICashIn, ICashOutPayload, ITransaction, TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interfaces";
 import Transaction from "./transaction.models";
@@ -39,6 +39,11 @@ const addMoneyToWallet = async (req: Request, payload: Partial<IWallet>, decoded
 
     if (!currentUserWallet) {
         throw new AppError(StatusCodes.NOT_FOUND, 'Wallet not found.')
+    }
+
+    // Check if wallet is blocked or deactivated
+    if (currentUserWallet.status === WALLET_STATUS.BLOCKED || currentUserWallet.status === WALLET_STATUS.DEACTIVATED) {
+        throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${currentUserWallet.status}`)
     }
 
     // Updated the wallet balance
@@ -93,6 +98,12 @@ const withdrawMoneyFromWallet = async (req: Request, payload: Partial<IWallet>, 
         throw new AppError(StatusCodes.NOT_FOUND, 'Wallet not found.')
     }
 
+    // Check if wallet is blocked or deactivated
+    if (currentUserWallet.status === WALLET_STATUS.BLOCKED || currentUserWallet.status === WALLET_STATUS.DEACTIVATED) {
+        throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${currentUserWallet.status}`)
+    }
+
+    // check if insufficient balance
     if (currentUserWallet.balance < balance) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Insufficient balance to withdraw.')
     }
@@ -145,7 +156,10 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
         throw new AppError(StatusCodes.NOT_FOUND, 'Current user wallet not available.')
     }
 
-
+    // Check if wallet is blocked or deactivated
+    if (currentUserWallet.status === WALLET_STATUS.BLOCKED || currentUserWallet.status === WALLET_STATUS.DEACTIVATED) {
+        throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${currentUserWallet.status}`)
+    }
 
     // find the user to send money
     const userToSendMOney = await User.findOne({ phone: numberTo })
@@ -159,6 +173,11 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
 
     if (!toUserWallet) {
         throw new AppError(StatusCodes.NOT_FOUND, 'To user wallet not available.')
+    }
+
+    // Check if wallet is blocked or deactivated
+    if(toUserWallet.status === WALLET_STATUS.BLOCKED || toUserWallet.status === WALLET_STATUS.DEACTIVATED){
+        throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. The user wallet you trying to send money is ${currentUserWallet.status}`)
     }
 
 
@@ -194,21 +213,21 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
 
 // Get all transaction history
 const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload) => {
-    
+
     const userId = decodedToken.userId
 
     const user = await User.findById(userId)
 
-    if(!user){
+    if (!user) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
     }
 
     // convert userId to an object id
     const objectUserId = new Types.ObjectId(userId)
     // gett logged in users transactions
-    const transactions = await Transaction.find({user: objectUserId})
+    const transactions = await Transaction.find({ user: objectUserId })
 
-    if(!transactions){
+    if (!transactions) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'No transaction available.')
     }
 
@@ -242,8 +261,13 @@ const cashIn = async (payload: ICashIn, decodedToken: JwtPayload) => {
         throw new AppError(StatusCodes.NOT_FOUND, 'Agent wallet not found.')
     }
 
+    // Check if wallet is blocked or deactivated
+    if(userAgentWallet.status === WALLET_STATUS.BLOCKED || userAgentWallet.status === WALLET_STATUS.DEACTIVATED){
+        throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, your agent wallet is ${userAgentWallet.status}`)
+    }
+
     // check if the cash in amount available to agent wallet or not
-    if(userAgentWallet.balance < amount){
+    if (userAgentWallet.balance < amount) {
         throw new AppError(StatusCodes.NOT_FOUND, 'Insuficient balance in agent wallet.')
     }
 
@@ -261,6 +285,16 @@ const cashIn = async (payload: ICashIn, decodedToken: JwtPayload) => {
 
     if (!toUserWallet) {
         throw new AppError(StatusCodes.NOT_FOUND, 'User wallet not found while cash in.')
+    }
+
+    // Agent can not cash in to his own wallet
+    if(userAgentWallet._id === toUserWallet._id){
+        throw new AppError(StatusCodes.BAD_REQUEST, 'You can not cash in to your own wallet.')
+    }
+
+    // Check if wallet is blocked or deactivated
+    if(toUserWallet.status === WALLET_STATUS.BLOCKED || toUserWallet.status === WALLET_STATUS.DEACTIVATED){
+        throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${toUserWallet.status}`)
     }
 
 
@@ -319,9 +353,14 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
         throw new AppError(StatusCodes.NOT_FOUND, 'Cash out user wallet not found.')
     }
 
-    
+    // Check if wallet is blocked or deactivated
+    if(cashOutUserWallet.status === WALLET_STATUS.BLOCKED || cashOutUserWallet.status === WALLET_STATUS.DEACTIVATED){
+        throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${cashOutUserWallet.status}`)
+    }
+
+
     // check if the cash out amount actually available to the users wallet or not
-    if(cashOutUserWallet.balance < cashOutAmount){
+    if (cashOutUserWallet.balance < cashOutAmount) {
         throw new AppError(StatusCodes.NOT_FOUND, 'Cash out amount is not available to users wallet.')
     }
 
@@ -333,7 +372,8 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
         throw new AppError(StatusCodes.BAD_REQUEST, 'User agent not found while cash out.')
     }
 
-    if(userAgent.role !== Role.AGENT){
+    // User must be an agent to cash out
+    if (userAgent.role !== Role.AGENT) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'User is not an Agent.')
     }
 
@@ -342,6 +382,17 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
 
     if (!agentWallet) {
         throw new AppError(StatusCodes.NOT_FOUND, 'User agent wallet not found while cash out.')
+    }
+
+    // Agent can not cash out from his own wallet 
+    if(cashOutUserWallet._id === agentWallet._id){
+        throw new AppError(StatusCodes.NOT_FOUND, 'You can not cash out from your own wallet.')
+    }
+
+
+    // Check if wallet is blocked or deactivated
+    if(agentWallet.status === WALLET_STATUS.BLOCKED || agentWallet.status === WALLET_STATUS.DEACTIVATED){
+        throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${agentWallet.status}`)
     }
 
 

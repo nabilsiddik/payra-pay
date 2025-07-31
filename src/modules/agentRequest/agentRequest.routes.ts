@@ -6,4 +6,4 @@ import { AgentRequestControllers } from "./agentRequest.controllers";
 export const agentRequestRouter = Router()
 
 // Handle agent request
-agentRequestRouter.post("/handle-request/:id", checkAuth(Role.ADMIN), AgentRequestControllers.handleAgentRequest);
+agentRequestRouter.patch("/handle-request/:id", checkAuth(Role.ADMIN), AgentRequestControllers.handleAgentRequest);

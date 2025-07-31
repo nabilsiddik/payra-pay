@@ -9,8 +9,8 @@ export const walletRouter = Router()
 walletRouter.get('/', checkAuth(Role.ADMIN), WalletControllers.getAllWallets)
 
 // Block a wallet
-walletRouter.post('/block/:id', checkAuth(Role.ADMIN), WalletControllers.blockWallet)
+walletRouter.patch('/block/:id', checkAuth(Role.ADMIN), WalletControllers.blockWallet)
 
 // Unblock a wallet
-walletRouter.post('/unblock/:id', checkAuth(Role.ADMIN), WalletControllers.unblockWallet)
+walletRouter.patch('/unblock/:id', checkAuth(Role.ADMIN), WalletControllers.unblockWallet)
 
