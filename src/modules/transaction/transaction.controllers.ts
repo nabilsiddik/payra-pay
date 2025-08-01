@@ -1,14 +1,15 @@
 import { NextFunction, Request, Response } from "express"
 import { catchAsync } from "../../app/errorHelpers/catchAsync"
 import { JwtPayload } from "jsonwebtoken"
-import { sendResponse } from "../../app/utils/sendResponse"
 import StatusCodes from 'http-status-codes'
 import { TransactionServices } from "./transaction.services"
 import AppError from "../../app/errorHelpers/appError"
+import { sendResponse } from "../../app/utils/sendResponse"
 
 // Get all transactions
-const getAllTransactions = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
-    const result = await TransactionServices.getAllTransactions()
+const getAllTransactions = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query as Record<string, string>
+    const result = await TransactionServices.getAllTransactions(query)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,

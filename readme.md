@@ -65,7 +65,7 @@ It also provides **admins** with full control over users, wallets, and transacti
 | GET    | `/history`                                  | Admin, Agent, User   | View transaction history for the authenticated user/agent. |
 | POST   | `/cash-in`                                  | Agent                | Agent performs cash-in to any user's wallet. |
 | POST   | `/cash-out`                                 | User                 | Agent can Cash-out from any user's wallet. User will hit the api
-| GET    | `/` (under transactions)                    | Admin                | Get all transactions. |
+| GET    | `/`                                         | Admin                | Get all transactions. |
 | POST   | `/parameters/create`                        | Admin                | Create/set transaction system parameters (Charges & commisions). |
 | PATCH  | `/parameters/update`                        | Admin                | Update existing transaction parameters. |
 

@@ -2,12 +2,12 @@ import { Request, Response } from "express"
 import statusCodes from 'http-status-codes'
 import { UserServices } from "./user.services"
 import { catchAsync } from "../../app/errorHelpers/catchAsync"
-import { sendResponse } from "../../app/utils/sendResponse"
 import { JwtPayload } from "jsonwebtoken"
 import { CurentUser } from "../wallet/wallet.interfaces"
+import { sendResponse } from "../../app/utils/sendResponse"
 
 // User registration
-export const createUser = catchAsync(async(req: Request, res: Response) => {
+export const createUser = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
     const newUser = await UserServices.createUser(payload)
 
@@ -20,7 +20,7 @@ export const createUser = catchAsync(async(req: Request, res: Response) => {
 })
 
 // Update user
-export const updateUser = catchAsync(async(req: Request, res: Response) => {
+export const updateUser = catchAsync(async (req: Request, res: Response) => {
 
     const payload = req.body
     const result = await UserServices.updateUser(req.user as CurentUser, payload)
@@ -34,8 +34,9 @@ export const updateUser = catchAsync(async(req: Request, res: Response) => {
 })
 
 // Get all users
-export const getAllUsers = catchAsync(async(req: Request, res: Response) => {
-    const result = await UserServices.getAllUsers()
+export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+    const query = req.query as Record<string, string>
+    const result = await UserServices.getAllUsers(query)
 
     sendResponse(res, {
         statusCode: statusCodes.CREATED,
@@ -46,7 +47,7 @@ export const getAllUsers = catchAsync(async(req: Request, res: Response) => {
 })
 
 // Get all agents
-export const getAllAgents = catchAsync(async(req: Request, res: Response) => {
+export const getAllAgents = catchAsync(async (req: Request, res: Response) => {
     const result = await UserServices.getAllAgents()
 
     sendResponse(res, {
@@ -59,7 +60,7 @@ export const getAllAgents = catchAsync(async(req: Request, res: Response) => {
 
 
 // Become an agent
-export const becomeAnAgent = catchAsync(async(req: Request, res: Response) => {
+export const becomeAnAgent = catchAsync(async (req: Request, res: Response) => {
     const result = await UserServices.becomeAnAgent(req.user as JwtPayload)
 
     sendResponse(res, {

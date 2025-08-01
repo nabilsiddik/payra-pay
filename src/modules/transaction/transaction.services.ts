@@ -9,12 +9,31 @@ import { ICashIn, ICashOutPayload, ITransaction, ITransactionParameters, TRANSAC
 import Transaction, { TransactionParameter } from "./transaction.models";
 import User from "../user/user.models";
 import { Role } from "../user/user.interfaces";
+import { QueryBuilder } from "../../app/utils/queryBuilder";
+import { transactionSearchableFields } from "./transaction.constants";
 
 
 // get all transactions
-const getAllTransactions = async () => {
-    const transactions = await Transaction.find()
-    return transactions
+const getAllTransactions = async (query: Record<string, string>) => {
+    // search, filter, sort, fields, paginate using query builder
+    const queryBuilder = new QueryBuilder(Transaction.find(), query)
+
+    const transactions = await queryBuilder
+    .search(transactionSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+
+    const [data, meta] = await Promise.all([
+        transactions.build(),
+        queryBuilder.getMeta()
+    ])
+    
+    return {
+        transactions: data,
+        meta
+    }
 }
 
 // Business logics of add money to wallet
@@ -212,7 +231,7 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
     const transactionPayload = {
         user: objectUserId,
         type: TRANSACTION_TYPES.SEND_MONEY,
-        amount: amount,
+        amount: Number(amount),
         totalAmountWithCharge: totalAmountWithSendMoneyCharge,
         charge: sendMoneyCharge,
         numberFrom: userFromSendMoney.phone,
@@ -332,7 +351,7 @@ const cashIn = async (payload: ICashIn, decodedToken: JwtPayload) => {
     const transactionPayload = {
         user: objectAgentId,
         type: TRANSACTION_TYPES.CASH_IN,
-        amount: amount,
+        amount: Number(amount),
         numberFrom: userAgent.phone,
         numberTo: userToCashIn.phone,
         status: TRANSACTION_STATUS.COMPLETED,

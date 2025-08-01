@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../app/errorHelpers/catchAsync";
-import { sendResponse } from "../../app/utils/sendResponse";
 import statusCodes from 'http-status-codes'
 import { WalletServices } from "./wallet.services";
 import { CurentUser } from "./wallet.interfaces";
+import { sendResponse } from "../../app/utils/sendResponse";
 
 // Get all wallets
 const getAllWallets = catchAsync(async(req: Request, res: Response, next: NextFunction) => {

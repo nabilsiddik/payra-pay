@@ -10,7 +10,10 @@ import { JwtPayload } from "jsonwebtoken";
 import StatusCodes from "http-status-codes";
 import AgentRequest from "../agentRequest/agentRequest.models";
 import { AgentRequestStatus, IAgentRequest } from "../agentRequest/agentRequest.interfaces";
-import { Types } from "mongoose";
+import { model, Query, Types } from "mongoose";
+import { QueryBuilder } from "../../app/utils/queryBuilder";
+import { userSearchableFields } from "./user.constants";
+
 
 // Service logics for creating a new user
 const createUser = async (payload: IUser) => {
@@ -78,9 +81,27 @@ const updateUser = async (currentUser: CurentUser, payload: Partial<IUser>) => {
 
 
 // Get all users
-const getAllUsers = async () => {
-    const users = await User.find().select('-password')
-    return users
+const getAllUsers = async (query: Record<string, string>) => {
+
+    // search, filter, sort, fields, paginate using query builder
+    const queryBuilder = new QueryBuilder(User.find(), query)
+
+    const users = await queryBuilder
+    .search(userSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+
+    const [data, meta] = await Promise.all([
+        users.build(),
+        queryBuilder.getMeta()
+    ])
+
+    return {
+        user: data,
+        meta
+    }
 }
 
 // Get all agents
