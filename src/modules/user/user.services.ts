@@ -11,7 +11,6 @@ import StatusCodes from "http-status-codes";
 import AgentRequest from "../agentRequest/agentRequest.models";
 import { AgentRequestStatus, IAgentRequest } from "../agentRequest/agentRequest.interfaces";
 import { Types } from "mongoose";
-import { Request } from "express";
 
 // Service logics for creating a new user
 const createUser = async (payload: IUser) => {

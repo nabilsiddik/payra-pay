@@ -3,7 +3,7 @@ import { checkAuth } from "../../app/middlewares/checkAuth";
 import { Role } from "../user/user.interfaces";
 import { TransactionControllers } from "./transaction.controllers";
 import { validateRequest } from "../../app/middlewares/validateRequest";
-import { addMoneyZodSchema, cashInZodSchema, cashOutZodSchema, sendMoneyZodSchema, withDrawMoneyZodSchema } from "./transaction.validations";
+import { addMoneyZodSchema, cashInZodSchema, cashOutZodSchema, sendMoneyZodSchema, transactionParameterCreationZodSchema, transactionParameterUpdateZodSchema, withDrawMoneyZodSchema } from "./transaction.validations";
 
 export const transactionRouter = Router()
 
@@ -27,5 +27,10 @@ transactionRouter.post('/cash-out', validateRequest(cashOutZodSchema), checkAuth
 
 // Get all transactions
 transactionRouter.get('/', checkAuth(Role.ADMIN), TransactionControllers.getAllTransactions)
+
+// Set transaction parameters
+transactionRouter.post('/parameters/create', checkAuth(Role.ADMIN), validateRequest(transactionParameterCreationZodSchema), TransactionControllers.createTransactionParameters)
+
+transactionRouter.patch('/parameters/update', checkAuth(Role.ADMIN), validateRequest(transactionParameterUpdateZodSchema), TransactionControllers.updateTransactionParameters)
 
 

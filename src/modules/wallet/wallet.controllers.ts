@@ -3,7 +3,6 @@ import { catchAsync } from "../../app/errorHelpers/catchAsync";
 import { sendResponse } from "../../app/utils/sendResponse";
 import statusCodes from 'http-status-codes'
 import { WalletServices } from "./wallet.services";
-import { JwtPayload } from "jsonwebtoken";
 import { CurentUser } from "./wallet.interfaces";
 
 // Get all wallets

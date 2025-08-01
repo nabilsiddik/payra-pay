@@ -1,6 +1,26 @@
 import { model, Schema } from "mongoose";
 import { TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interfaces";
 
+
+const transactionParameterSchema = new Schema({
+    sendMoneyCharge: {
+        type: Number,
+        requird: true,
+    },
+    agentCommision: {
+        type: Number,
+        required: true,
+    },
+    cashOutCharge: {
+        type: Number,
+        required: true
+    }
+}, {
+    timestamps: true,
+    versionKey: false
+}) 
+export const TransactionParameter = model('TransactionParameter', transactionParameterSchema)
+
 // Define transaction model
 const transactionSchema = new Schema({
     user: {
@@ -15,6 +35,18 @@ const transactionSchema = new Schema({
     amount: {
         type: Number,
         required: true,
+    },
+    totalAmountWithCharge: {
+        type: Number,
+    },
+    charge: {
+        type: Number,
+    },
+    agentCommision: {
+        type: Number,
+    },
+    payraPayGot: {
+        type: Number,
     },
     status: {
         type: String,

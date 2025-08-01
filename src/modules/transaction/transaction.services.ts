@@ -5,8 +5,8 @@ import { JwtPayload } from "jsonwebtoken";
 import mongoose, { Types } from "mongoose";
 import { IWallet, WALLET_STATUS } from "../wallet/wallet.interfaces";
 import Wallet from "../wallet/wallet.models";
-import { ICashIn, ICashOutPayload, ITransaction, TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interfaces";
-import Transaction from "./transaction.models";
+import { ICashIn, ICashOutPayload, ITransaction, ITransactionParameters, TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interfaces";
+import Transaction, { TransactionParameter } from "./transaction.models";
 import User from "../user/user.models";
 import { Role } from "../user/user.interfaces";
 
@@ -136,6 +136,20 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
     const { amount, numberTo } = payload
     const userId = decodedToken.userId
 
+    // Get sendmoney charge in percentage
+    const transactionParameter = await TransactionParameter.findOne()
+
+    if (!transactionParameter) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Transacton parameter not found.')
+    }
+
+    const sendMoneyChargeInPercentage = transactionParameter.sendMoneyCharge
+
+    // calculate send money charge
+    const sendMoneyCharge = Number(amount) * (Number(sendMoneyChargeInPercentage) / 100)
+
+    // Total amount with send money charge
+    const totalAmountWithSendMoneyCharge = Number(amount) + sendMoneyCharge
 
     if (!req.user) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
@@ -157,8 +171,8 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
     }
 
     // check if insufficient balance
-    if (currentUserWallet.balance < Number(amount)) {
-        throw new AppError(StatusCodes.BAD_REQUEST, 'Insufficient balance to withdraw.')
+    if (currentUserWallet.balance < Number(totalAmountWithSendMoneyCharge)) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Insufficient balance to send money.')
     }
 
     // Check if wallet is blocked or deactivated
@@ -181,13 +195,13 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
     }
 
     // Check if wallet is blocked or deactivated
-    if(toUserWallet.status === WALLET_STATUS.BLOCKED || toUserWallet.status === WALLET_STATUS.DEACTIVATED){
+    if (toUserWallet.status === WALLET_STATUS.BLOCKED || toUserWallet.status === WALLET_STATUS.DEACTIVATED) {
         throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. The user wallet you trying to send money is ${currentUserWallet.status}`)
     }
 
 
     // Minus balance from current user wallet
-    currentUserWallet.balance -= Number(amount)
+    currentUserWallet.balance -= Number(totalAmountWithSendMoneyCharge)
     await currentUserWallet.save()
     // Add balance to user wallet
     toUserWallet.balance += Number(amount)
@@ -199,6 +213,8 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
         user: objectUserId,
         type: TRANSACTION_TYPES.SEND_MONEY,
         amount: amount,
+        totalAmountWithCharge: totalAmountWithSendMoneyCharge,
+        charge: sendMoneyCharge,
         numberFrom: userFromSendMoney.phone,
         numberTo: userToSendMOney.phone,
         status: TRANSACTION_STATUS.COMPLETED,
@@ -267,7 +283,7 @@ const cashIn = async (payload: ICashIn, decodedToken: JwtPayload) => {
     }
 
     // Check if wallet is blocked or deactivated
-    if(userAgentWallet.status === WALLET_STATUS.BLOCKED || userAgentWallet.status === WALLET_STATUS.DEACTIVATED){
+    if (userAgentWallet.status === WALLET_STATUS.BLOCKED || userAgentWallet.status === WALLET_STATUS.DEACTIVATED) {
         throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, your agent wallet is ${userAgentWallet.status}`)
     }
 
@@ -293,12 +309,12 @@ const cashIn = async (payload: ICashIn, decodedToken: JwtPayload) => {
     }
 
     // Agent can not cash in to his own wallet
-    if(userAgentWallet._id === toUserWallet._id){
+    if (userAgentWallet._id === toUserWallet._id) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'You can not cash in to your own wallet.')
     }
 
     // Check if wallet is blocked or deactivated
-    if(toUserWallet.status === WALLET_STATUS.BLOCKED || toUserWallet.status === WALLET_STATUS.DEACTIVATED){
+    if (toUserWallet.status === WALLET_STATUS.BLOCKED || toUserWallet.status === WALLET_STATUS.DEACTIVATED) {
         throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${toUserWallet.status}`)
     }
 
@@ -339,6 +355,31 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
     const { agentPhoneNumber, cashOutAmount } = payload
     const userId = decodedToken.userId
 
+    // Get cashout charge in percentage
+    const transactionParameter = await TransactionParameter.findOne()
+
+    if (!transactionParameter) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Transacton parameter not found.')
+    }
+
+    const cashOutChargeInPercentage = transactionParameter.cashOutCharge
+    const agentCommistionInPercentage = transactionParameter.agentCommision
+
+    // calculate cash out charge
+    const cashOutCharge = Number(cashOutAmount) * (Number(cashOutChargeInPercentage) / 100)
+    
+    // Agents commision
+    const agentCommision = cashOutCharge * (Number(agentCommistionInPercentage) / 100)
+
+    // Payra pay will get
+    const payraPaywillGet = cashOutCharge - agentCommision
+
+    // agent will get total
+    const agentsTotal = Number(cashOutAmount) + agentCommision
+
+    // Total amount with cashout charge
+    const totalAmountWithCashOutCharge = Number(cashOutAmount) + cashOutCharge
+
     if (!userId) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
     }
@@ -359,13 +400,13 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
     }
 
     // Check if wallet is blocked or deactivated
-    if(cashOutUserWallet.status === WALLET_STATUS.BLOCKED || cashOutUserWallet.status === WALLET_STATUS.DEACTIVATED){
+    if (cashOutUserWallet.status === WALLET_STATUS.BLOCKED || cashOutUserWallet.status === WALLET_STATUS.DEACTIVATED) {
         throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${cashOutUserWallet.status}`)
     }
 
 
     // check if the cash out amount actually available to the users wallet or not
-    if (cashOutUserWallet.balance < cashOutAmount) {
+    if (cashOutUserWallet.balance < totalAmountWithCashOutCharge) {
         throw new AppError(StatusCodes.NOT_FOUND, 'Insufficient balance to cash out.')
     }
 
@@ -390,24 +431,24 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
     }
 
     // Agent can not cash out from his own wallet 
-    if(cashOutUserWallet._id === agentWallet._id){
+    if (cashOutUserWallet._id === agentWallet._id) {
         throw new AppError(StatusCodes.NOT_FOUND, 'You can not cash out from your own wallet.')
     }
 
 
     // Check if wallet is blocked or deactivated
-    if(agentWallet.status === WALLET_STATUS.BLOCKED || agentWallet.status === WALLET_STATUS.DEACTIVATED){
+    if (agentWallet.status === WALLET_STATUS.BLOCKED || agentWallet.status === WALLET_STATUS.DEACTIVATED) {
         throw new AppError(StatusCodes.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${agentWallet.status}`)
     }
 
 
 
     // Minus balance from current user wallet
-    cashOutUserWallet.balance -= Number(cashOutAmount)
+    cashOutUserWallet.balance -= Number(totalAmountWithCashOutCharge)
     await cashOutUserWallet.save()
 
     // Add balance to user wallet
-    agentWallet.balance += Number(cashOutAmount)
+    agentWallet.balance += Number(agentsTotal)
     await agentWallet.save()
 
 
@@ -416,6 +457,10 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
         user: objectAgentId,
         type: TRANSACTION_TYPES.CASH_OUT,
         amount: cashOutAmount,
+        totalAmountWithCharge: totalAmountWithCashOutCharge,
+        charge: cashOutCharge,
+        agentCommision: agentCommision,
+        payraPayGot: payraPaywillGet,
         numberFrom: cashOutUser.phone,
         numberTo: userAgent.phone,
         status: TRANSACTION_STATUS.COMPLETED,
@@ -432,7 +477,33 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
 
 }
 
+// crate transactio parameter
+const createTransactionParameters = async (payload: ITransactionParameters) => {
 
+    // check if transaction parameter already exist
+    const transactionParameter = await TransactionParameter.findOne()
+
+    if (transactionParameter) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'Transaction parameter already available. You can just update the parameters value now.')
+    }
+
+    const createdParameter = await TransactionParameter.create(payload)
+    return createdParameter
+}
+
+// Update transaction parameter
+const updateTransactionParameter = async (payload: Partial<ITransactionParameters>) => {
+
+    // check if transaction parameter already exist
+    const transactionParameter = await TransactionParameter.findOne()
+
+    if (!transactionParameter) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'Transaction parameter not found.')
+    }
+
+    const updatedParameter = await TransactionParameter.findOneAndUpdate({}, payload, { new: true })
+    return updatedParameter
+}
 
 
 export const TransactionServices = {
@@ -442,5 +513,7 @@ export const TransactionServices = {
     getAllTransactionHistory,
     cashIn,
     cashOut,
-    getAllTransactions
+    getAllTransactions,
+    createTransactionParameters,
+    updateTransactionParameter
 }

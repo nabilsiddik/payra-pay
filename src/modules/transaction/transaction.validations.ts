@@ -54,3 +54,19 @@ export const cashOutZodSchema = z.object({
     .min(10, 'Minimum add balance amount is 10')
     .max(50000, 'Maximum add balance amount is 50,000 at a time')
 })
+
+
+// Transaction parameter payload cration zod schema
+export const transactionParameterCreationZodSchema = z.object({
+    sendMoneyCharge: z.number('Value must be a positive number.').positive(),
+    agentCommision: z.number('Value must be a positive number.').positive(),
+    cashOutCharge: z.number('Value must be a positive number.').positive(),
+})
+
+
+// Transaction parameter payload update zod schema
+export const transactionParameterUpdateZodSchema = z.object({
+    sendMoneyCharge: z.number('Value must be a positive number.').positive().optional(),
+    agentCommision: z.number('Value must be a positive number.').positive().optional(),
+    cashOutCharge: z.number('Value must be a positive number.').positive().optional(),
+})

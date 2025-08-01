@@ -2,8 +2,7 @@ import AppError from "../../app/errorHelpers/appError"
 import User from "../user/user.models"
 import statusCodes from 'http-status-codes'
 import bcrypt from 'bcryptjs'
-import { enVars } from "../../app/config/env"
-import { crateUserTokens } from "../../app/utils/userTokens"
+import { createUserTokens } from "../../app/utils/userTokens"
 
 const credentialLogin = async (email: string, password: string) => {
     // check if user actually exist
@@ -20,7 +19,7 @@ const credentialLogin = async (email: string, password: string) => {
     }
 
     // get user tokens
-    const userTokens = crateUserTokens(existingUser)
+    const userTokens = createUserTokens(existingUser)
 
     return {
         accessToken: userTokens.accessToken,

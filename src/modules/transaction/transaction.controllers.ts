@@ -115,6 +115,33 @@ const cashOut = catchAsync(async (req: Request, res: Response, next: NextFunctio
     })
 })
 
+
+// Set transacton parameters
+const createTransactionParameters = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const result = await TransactionServices.createTransactionParameters(req.body)
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Transaction parameter crated successfully.',
+        data: result
+    })
+})
+
+
+// update transacton parameters
+const updateTransactionParameters = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const result = await TransactionServices.updateTransactionParameter(req.body)
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Transaction parameter updated successfully.',
+        data: result
+    })
+})
+
+
 export const TransactionControllers = {
     addMoneyToWallet,
     withdrawMoneyFromWallet,
@@ -122,5 +149,7 @@ export const TransactionControllers = {
     getAllTransactionHistory,
     cashIn,
     cashOut,
-    getAllTransactions
+    getAllTransactions,
+    createTransactionParameters,
+    updateTransactionParameters
 }

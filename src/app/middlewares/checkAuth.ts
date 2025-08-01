@@ -6,11 +6,11 @@ import { enVars } from "../config/env";
 import User from "../../modules/user/user.models";
 import { IsActive } from "../../modules/user/user.interfaces";
 
-export const checkAuth = (...authRoles: string[]) => async(req: Request, res: Response, next: NextFunction) => {
-    try{
+export const checkAuth = (...authRoles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
+    try {
         const accessToken = req.headers.authorization
 
-        if(!accessToken){
+        if (!accessToken) {
             throw new AppError(StatusCodes.UNAUTHORIZED, 'Access token not found.')
         }
 
@@ -18,10 +18,10 @@ export const checkAuth = (...authRoles: string[]) => async(req: Request, res: Re
         const verifiedToken = verifyToken(accessToken, enVars.JWT_ACCESS_SECRET)
 
         // Find the existing user 
-        const existingUser = await User.findOne({email: verifiedToken.email})
+        const existingUser = await User.findOne({ email: verifiedToken.email })
 
         // If user does not exist
-        if(!existingUser){
+        if (!existingUser) {
             throw new AppError(StatusCodes.BAD_REQUEST, 'User does not exist.')
         }
 
@@ -29,22 +29,22 @@ export const checkAuth = (...authRoles: string[]) => async(req: Request, res: Re
         // if(!existingUser.isVerified){
         //     throw new AppError(StatusCodes.BAD_REQUEST, 'User is not verified.')
         // }
-        
+
 
         // If user is blocked or inactive
-        if(existingUser.isActive === IsActive.BLOCKED || existingUser.isActive === IsActive.INACTIVE){
+        if (existingUser.isActive === IsActive.BLOCKED || existingUser.isActive === IsActive.INACTIVE) {
             throw new AppError(StatusCodes.BAD_REQUEST, `User is ${existingUser.isActive}`)
         }
 
         // If user is deleted
-        if(existingUser.isDateleted){
+        if (existingUser.isDateleted) {
             throw new AppError(StatusCodes.BAD_REQUEST, `User is Deleted`)
         }
 
 
         // If user is not permitted, means user role does not allow to visit that route
-        if(!authRoles.includes(verifiedToken.role)){
-             throw new AppError(StatusCodes.FORBIDDEN, `You are not permitted to access this route.`)
+        if (!authRoles.includes(verifiedToken.role)) {
+            throw new AppError(StatusCodes.FORBIDDEN, `You are not permitted to access this route.`)
         }
 
         req.user = verifiedToken
@@ -52,8 +52,10 @@ export const checkAuth = (...authRoles: string[]) => async(req: Request, res: Re
         next()
 
 
-    }catch(error: any){
-        console.log(error)
+    } catch (error: any) {
+        if (enVars.NODE_ENV === 'development') {
+            console.log(error)
+        }
         next(error)
     }
 }
