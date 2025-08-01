@@ -15,7 +15,8 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response, next: 
         statusCode: StatusCodes.OK,
         success: true,
         message: 'Successfully retrived all transactions.',
-        data: result
+        data: result.transactions,
+        meta: result.meta
     })
 })
 

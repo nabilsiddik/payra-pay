@@ -99,7 +99,7 @@ const getAllUsers = async (query: Record<string, string>) => {
     ])
 
     return {
-        user: data,
+        users: data,
         meta
     }
 }

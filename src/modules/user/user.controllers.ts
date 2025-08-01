@@ -42,7 +42,8 @@ export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
         statusCode: statusCodes.CREATED,
         success: true,
         message: 'All user retrived successfully.',
-        data: result
+        data: result.users,
+        meta: result.meta
     })
 })
 
