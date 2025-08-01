@@ -35,7 +35,8 @@ It also provides **admins** with full control over users, wallets, and transacti
 
 ## 📦 Installation & Setup  
 
-### 1️⃣ Clone the repository  
 ```bash
-git clone https://github.com/yourusername/payra-pay.git
+# Clone the repository
+git clone https://github.com/nabilsiddik/payra-pay.git
 cd payra-pay
+
