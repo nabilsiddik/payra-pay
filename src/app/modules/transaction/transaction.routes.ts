@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { checkAuth } from "../../app/middlewares/checkAuth";
 import { Role } from "../user/user.interfaces";
 import { TransactionControllers } from "./transaction.controllers";
-import { validateRequest } from "../../app/middlewares/validateRequest";
 import { addMoneyZodSchema, cashInZodSchema, cashOutZodSchema, sendMoneyZodSchema, transactionParameterCreationZodSchema, transactionParameterUpdateZodSchema, withDrawMoneyZodSchema } from "./transaction.validations";
+import { validateRequest } from "../../middlewares/validateRequest";
+import { checkAuth } from "../../middlewares/checkAuth";
 
 export const transactionRouter = Router()
 

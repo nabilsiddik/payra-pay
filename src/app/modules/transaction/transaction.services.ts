@@ -1,5 +1,4 @@
 import { Request } from "express";
-import AppError from "../../app/errorHelpers/appError";
 import StatusCodes from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
 import mongoose, { Types } from "mongoose";
@@ -9,8 +8,9 @@ import { ICashIn, ICashOutPayload, ITransaction, ITransactionParameters, TRANSAC
 import Transaction, { TransactionParameter } from "./transaction.models";
 import User from "../user/user.models";
 import { Role } from "../user/user.interfaces";
-import { QueryBuilder } from "../../app/utils/queryBuilder";
 import { transactionSearchableFields } from "./transaction.constants";
+import { QueryBuilder } from "../../utils/queryBuilder";
+import AppError from "../../errorHelpers/appError";
 
 
 // get all transactions

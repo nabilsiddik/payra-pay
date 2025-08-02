@@ -28,7 +28,7 @@ const handleAgentRequest = (req) => __awaiter(void 0, void 0, void 0, function* 
         throw new appError_1.default(http_status_codes_1.default.NOT_FOUND, 'Agent request not found.');
     }
     // Update agent request status
-    const updatedAgentRequestStaus = yield agentRequest_models_1.default.findByIdAndUpdate(agentReqId, { status }, { new: true });
+    const updatedAgentRequestStaus = yield agentRequest_models_1.default.findByIdAndUpdate(agentReqId, { status }, { new: true, runValidators: true });
     return updatedAgentRequestStaus;
 });
 exports.AgentRequestServices = {

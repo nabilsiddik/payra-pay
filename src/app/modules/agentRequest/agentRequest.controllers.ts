@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express"
-import { catchAsync } from "../../app/errorHelpers/catchAsync"
-import { sendResponse } from "../../app/utils/sendResponse"
 import { AgentRequestServices } from "./agentRequest.services"
 import statusCodes from 'http-status-codes'
-import { JwtPayload } from "jsonwebtoken"
+import { sendResponse } from "../../utils/sendResponse"
+import { catchAsync } from "../../errorHelpers/catchAsync"
 
 // Handle agent request
 export const handleAgentRequest = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

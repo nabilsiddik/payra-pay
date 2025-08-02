@@ -14,6 +14,9 @@ const walletSchema = new mongoose_1.Schema({
         required: true,
         default: 50
     },
+    totalCommision: {
+        type: Number,
+    },
     status: {
         type: String,
         enum: Object.values(wallet_interfaces_1.WALLET_STATUS),

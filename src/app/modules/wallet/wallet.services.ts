@@ -1,9 +1,9 @@
 import { Request } from "express";
 import Wallet from "./wallet.models";
-import AppError from "../../app/errorHelpers/appError";
 import StatusCodes from "http-status-codes";
 import { CurentUser, WALLET_STATUS } from "./wallet.interfaces";
 import User from "../user/user.models";
+import AppError from "../../errorHelpers/appError";
 
 // get all wallets
 const getAllWallets = async () => {

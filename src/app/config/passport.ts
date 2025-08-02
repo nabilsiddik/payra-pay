@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as LocalStreategy } from 'passport-local'
-import User from "../../modules/user/user.models";
 import bcrypt from 'bcryptjs'
+import User from "../modules/user/user.models";
 
 passport.use(new LocalStreategy({
     usernameField: "email",

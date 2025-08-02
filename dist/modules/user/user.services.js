@@ -79,7 +79,7 @@ const updateUser = (currentUser, payload) => __awaiter(void 0, void 0, void 0, f
     if (!logedInUser) {
         throw new appError_1.default(http_status_codes_2.default.NOT_FOUND, 'Logged in user not found.');
     }
-    const updatedUser = yield user_models_1.default.findByIdAndUpdate(currentUser.userId, payload, { new: true });
+    const updatedUser = yield user_models_1.default.findByIdAndUpdate(currentUser.userId, payload, { new: true, runValidators: true });
     return updatedUser;
 });
 // Get all users

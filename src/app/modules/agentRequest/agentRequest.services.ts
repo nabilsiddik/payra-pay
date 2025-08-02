@@ -1,8 +1,8 @@
 import { Request } from "express"
-import AppError from "../../app/errorHelpers/appError"
 import statusCodes from 'http-status-codes'
 import AgentRequest from "./agentRequest.models"
 import { HandleAgentPayloadType } from "./agentRequest.interfaces"
+import AppError from "../../errorHelpers/appError"
 
 
 const handleAgentRequest = async(req: Request) => {

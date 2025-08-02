@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { checkAuth } from "../../app/middlewares/checkAuth";
 import { Role } from "../user/user.interfaces";
 import { WalletControllers } from "./wallet.controllers";
+import { checkAuth } from "../../middlewares/checkAuth";
 
 export const walletRouter = Router()
 

@@ -400,9 +400,13 @@ const cashOut = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, fun
         status: transaction_interfaces_1.TRANSACTION_STATUS.COMPLETED,
     };
     const transaction = yield transaction_models_1.default.create(transactionPayload);
+    // Update agent total commision
+    const updatedAgentWallet = yield wallet_models_1.default.findOneAndUpdate({ user: userAgent._id }, {
+        $inc: { totalCommision: agentCommision }
+    }, { new: true, runValidators: true });
     return {
         cashOutUserWallet,
-        agentWallet,
+        updatedAgentWallet,
         transaction
     };
 });

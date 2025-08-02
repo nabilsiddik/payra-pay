@@ -40,7 +40,7 @@ const blockWallet = (req) => __awaiter(void 0, void 0, void 0, function* () {
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `Wallet is already ${wallet.status}`);
     }
     // Update wallet status
-    const updatedWallet = yield wallet_models_1.default.findByIdAndUpdate(walletId, { status: wallet_interfaces_1.WALLET_STATUS.BLOCKED }, { new: true });
+    const updatedWallet = yield wallet_models_1.default.findByIdAndUpdate(walletId, { status: wallet_interfaces_1.WALLET_STATUS.BLOCKED }, { new: true, runValidators: true });
     return updatedWallet;
 });
 // Unblock a wallet
@@ -60,7 +60,7 @@ const unblockWallet = (req) => __awaiter(void 0, void 0, void 0, function* () {
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `Wallet is already ${wallet.status}`);
     }
     // Update wallet status
-    const updatedWallet = yield wallet_models_1.default.findByIdAndUpdate(walletId, { status: wallet_interfaces_1.WALLET_STATUS.ACTIVE }, { new: true });
+    const updatedWallet = yield wallet_models_1.default.findByIdAndUpdate(walletId, { status: wallet_interfaces_1.WALLET_STATUS.ACTIVE }, { new: true, runValidators: true });
     return updatedWallet;
 });
 // Deactivate own wallet
@@ -85,7 +85,7 @@ const deactivateOwnWallet = (currentUser) => __awaiter(void 0, void 0, void 0, f
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `Wallet is already Deactivated`);
     }
     // Update wallet status
-    const updatedWallet = yield wallet_models_1.default.findByIdAndUpdate(loggedInUserWallet._id, { status: wallet_interfaces_1.WALLET_STATUS.DEACTIVATED }, { new: true });
+    const updatedWallet = yield wallet_models_1.default.findByIdAndUpdate(loggedInUserWallet._id, { status: wallet_interfaces_1.WALLET_STATUS.DEACTIVATED }, { new: true, runValidators: true });
     return updatedWallet;
 });
 // Activate own wallet
@@ -110,7 +110,7 @@ const activateOwnWallet = (currentUser) => __awaiter(void 0, void 0, void 0, fun
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `Wallet is already Active`);
     }
     // Update wallet status
-    const updatedWallet = yield wallet_models_1.default.findByIdAndUpdate(loggedInUserWallet._id, { status: wallet_interfaces_1.WALLET_STATUS.ACTIVE }, { new: true });
+    const updatedWallet = yield wallet_models_1.default.findByIdAndUpdate(loggedInUserWallet._id, { status: wallet_interfaces_1.WALLET_STATUS.ACTIVE }, { new: true, runValidators: true });
     return updatedWallet;
 });
 exports.WalletServices = {

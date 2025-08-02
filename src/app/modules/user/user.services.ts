@@ -2,17 +2,17 @@ import { IAuthProvider, IUser, Provider, Role } from "./user.interfaces"
 import User from "./user.models"
 import statusCodes from 'http-status-codes';
 import bcrypt from 'bcryptjs';
-import { enVars } from "../../app/config/env";
-import AppError from "../../app/errorHelpers/appError";
 import { CurentUser, WALLET_STATUS } from "../wallet/wallet.interfaces";
 import Wallet from "../wallet/wallet.models";
 import { JwtPayload } from "jsonwebtoken";
 import StatusCodes from "http-status-codes";
 import AgentRequest from "../agentRequest/agentRequest.models";
 import { AgentRequestStatus, IAgentRequest } from "../agentRequest/agentRequest.interfaces";
-import { model, Query, Types } from "mongoose";
-import { QueryBuilder } from "../../app/utils/queryBuilder";
+import { Types } from "mongoose";
 import { userSearchableFields } from "./user.constants";
+import AppError from "../../errorHelpers/appError";
+import { enVars } from "../../config/env";
+import { QueryBuilder } from "../../utils/queryBuilder";
 
 
 // Service logics for creating a new user

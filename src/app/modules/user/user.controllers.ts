@@ -1,10 +1,10 @@
 import { Request, Response } from "express"
 import statusCodes from 'http-status-codes'
 import { UserServices } from "./user.services"
-import { catchAsync } from "../../app/errorHelpers/catchAsync"
 import { JwtPayload } from "jsonwebtoken"
 import { CurentUser } from "../wallet/wallet.interfaces"
-import { sendResponse } from "../../app/utils/sendResponse"
+import { catchAsync } from "../../errorHelpers/catchAsync"
+import { sendResponse } from "../../utils/sendResponse"
 
 // User registration
 export const createUser = catchAsync(async (req: Request, res: Response) => {

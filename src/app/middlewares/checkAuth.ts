@@ -3,8 +3,8 @@ import AppError from "../errorHelpers/appError";
 import StatusCodes from "http-status-codes";
 import { verifyToken } from "../utils/jwt";
 import { enVars } from "../config/env";
-import User from "../../modules/user/user.models";
-import { IsActive } from "../../modules/user/user.interfaces";
+import User from "../modules/user/user.models";
+import { IsActive } from "../modules/user/user.interfaces";
 
 export const checkAuth = (...authRoles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
     try {

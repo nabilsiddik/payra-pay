@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { checkAuth } from "../../app/middlewares/checkAuth";
 import { Role } from "../user/user.interfaces";
 import { AgentRequestControllers } from "./agentRequest.controllers";
-import { validateRequest } from "../../app/middlewares/validateRequest";
 import { agentRequestPayloadZodSchema } from './agentRequest.validations';
+import { validateRequest } from "../../middlewares/validateRequest";
+import { checkAuth } from "../../middlewares/checkAuth";
 
 export const agentRequestRouter = Router()
 

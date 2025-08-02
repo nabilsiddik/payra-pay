@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express"
-import { sendResponse } from "../../app/utils/sendResponse"
 import statusCodes from 'http-status-codes'
-import AppError from "../../app/errorHelpers/appError"
-import { catchAsync } from "../../app/errorHelpers/catchAsync"
 import passport from "passport"
-import { createUserTokens } from "../../app/utils/userTokens"
-import { setAuthCookie } from "../../app/utils/setCookie"
+import { catchAsync } from "../../errorHelpers/catchAsync"
+import AppError from "../../errorHelpers/appError"
+import { createUserTokens } from "../../utils/userTokens"
+import { setAuthCookie } from "../../utils/setCookie"
+import { sendResponse } from "../../utils/sendResponse"
 
 // Credential login
 const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

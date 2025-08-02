@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express"
-import { catchAsync } from "../../app/errorHelpers/catchAsync"
 import { JwtPayload } from "jsonwebtoken"
 import StatusCodes from 'http-status-codes'
 import { TransactionServices } from "./transaction.services"
-import AppError from "../../app/errorHelpers/appError"
-import { sendResponse } from "../../app/utils/sendResponse"
+import { catchAsync } from "../../errorHelpers/catchAsync"
+import { sendResponse } from "../../utils/sendResponse"
+import AppError from "../../errorHelpers/appError"
 
 // Get all transactions
 const getAllTransactions = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
