@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WalletControllers = void 0;
 const catchAsync_1 = require("../../app/errorHelpers/catchAsync");
-const sendResponse_1 = require("../../app/utils/sendResponse");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const wallet_services_1 = require("./wallet.services");
+const sendResponse_1 = require("../../app/utils/sendResponse");
 // Get all wallets
 const getAllWallets = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield wallet_services_1.WalletServices.getAllWallets();

@@ -36,6 +36,8 @@ const http_status_codes_2 = __importDefault(require("http-status-codes"));
 const agentRequest_models_1 = __importDefault(require("../agentRequest/agentRequest.models"));
 const agentRequest_interfaces_1 = require("../agentRequest/agentRequest.interfaces");
 const mongoose_1 = require("mongoose");
+const queryBuilder_1 = require("../../app/utils/queryBuilder");
+const user_constants_1 = require("./user.constants");
 // Service logics for creating a new user
 const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload, rest = __rest(payload
@@ -81,9 +83,23 @@ const updateUser = (currentUser, payload) => __awaiter(void 0, void 0, void 0, f
     return updatedUser;
 });
 // Get all users
-const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
-    const users = yield user_models_1.default.find().select('-password');
-    return users;
+const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    // search, filter, sort, fields, paginate using query builder
+    const queryBuilder = new queryBuilder_1.QueryBuilder(user_models_1.default.find(), query);
+    const users = yield queryBuilder
+        .search(user_constants_1.userSearchableFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate();
+    const [data, meta] = yield Promise.all([
+        users.build(),
+        queryBuilder.getMeta()
+    ]);
+    return {
+        users: data,
+        meta
+    };
 });
 // Get all agents
 const getAllAgents = () => __awaiter(void 0, void 0, void 0, function* () {

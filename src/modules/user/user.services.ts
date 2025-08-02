@@ -74,7 +74,7 @@ const updateUser = async (currentUser: CurentUser, payload: Partial<IUser>) => {
         throw new AppError(StatusCodes.NOT_FOUND, 'Logged in user not found.')
     }
 
-    const updatedUser = await User.findByIdAndUpdate(currentUser.userId, payload, {new: true})
+    const updatedUser = await User.findByIdAndUpdate(currentUser.userId, payload, {new: true, runValidators: true})
 
     return updatedUser
 }

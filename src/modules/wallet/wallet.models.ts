@@ -13,6 +13,9 @@ const walletSchema = new Schema({
         required: true,
         default: 50
     },
+    totalCommision: {
+        type: Number,
+    },
     status: {
         type: String,
         enum: Object.values(WALLET_STATUS),

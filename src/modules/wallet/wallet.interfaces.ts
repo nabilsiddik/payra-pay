@@ -18,5 +18,6 @@ export interface CurentUser {
 export interface IWallet{
     user: Types.ObjectId,
     balance: number,
+    totalCommision: number,
     status: WALLET_STATUS
 }

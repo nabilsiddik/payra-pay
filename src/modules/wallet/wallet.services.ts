@@ -33,7 +33,7 @@ const blockWallet = async(req: Request) => {
     }
 
     // Update wallet status
-    const updatedWallet = await Wallet.findByIdAndUpdate(walletId, {status: WALLET_STATUS.BLOCKED}, {new: true})
+    const updatedWallet = await Wallet.findByIdAndUpdate(walletId, {status: WALLET_STATUS.BLOCKED}, {new: true, runValidators: true})
 
     return updatedWallet
 }
@@ -61,7 +61,7 @@ const unblockWallet = async(req: Request) => {
     }
 
     // Update wallet status
-    const updatedWallet = await Wallet.findByIdAndUpdate(walletId, {status: WALLET_STATUS.ACTIVE}, {new: true})
+    const updatedWallet = await Wallet.findByIdAndUpdate(walletId, {status: WALLET_STATUS.ACTIVE}, {new: true, runValidators: true})
 
     return updatedWallet
 }
@@ -97,7 +97,7 @@ const deactivateOwnWallet = async(currentUser: CurentUser) => {
     }
 
     // Update wallet status
-    const updatedWallet = await Wallet.findByIdAndUpdate(loggedInUserWallet._id, {status: WALLET_STATUS.DEACTIVATED}, {new: true})
+    const updatedWallet = await Wallet.findByIdAndUpdate(loggedInUserWallet._id, {status: WALLET_STATUS.DEACTIVATED}, {new: true, runValidators: true})
 
     return updatedWallet
 }
@@ -133,7 +133,7 @@ const activateOwnWallet = async(currentUser: CurentUser) => {
     }
 
     // Update wallet status
-    const updatedWallet = await Wallet.findByIdAndUpdate(loggedInUserWallet._id, {status: WALLET_STATUS.ACTIVE}, {new: true})
+    const updatedWallet = await Wallet.findByIdAndUpdate(loggedInUserWallet._id, {status: WALLET_STATUS.ACTIVE}, {new: true, runValidators: true})
 
     return updatedWallet
 }

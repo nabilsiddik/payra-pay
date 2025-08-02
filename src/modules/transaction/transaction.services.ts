@@ -487,9 +487,14 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
 
     const transaction = await Transaction.create(transactionPayload)
 
+    // Update agent total commision
+    const updatedAgentWallet = await Wallet.findOneAndUpdate({ user: userAgent._id }, {
+        $inc: {totalCommision: agentCommision}
+    }, {new: true, runValidators: true})
+
     return {
         cashOutUserWallet,
-        agentWallet,
+        updatedAgentWallet,
         transaction
     }
 

@@ -14,18 +14,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionControllers = void 0;
 const catchAsync_1 = require("../../app/errorHelpers/catchAsync");
-const sendResponse_1 = require("../../app/utils/sendResponse");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const transaction_services_1 = require("./transaction.services");
 const appError_1 = __importDefault(require("../../app/errorHelpers/appError"));
+const sendResponse_1 = require("../../app/utils/sendResponse");
 // Get all transactions
 const getAllTransactions = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield transaction_services_1.TransactionServices.getAllTransactions();
+    const query = req.query;
+    const result = yield transaction_services_1.TransactionServices.getAllTransactions(query);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
         success: true,
         message: 'Successfully retrived all transactions.',
-        data: result
+        data: result.transactions,
+        meta: result.meta
     });
 }));
 // Add money to wallet
@@ -100,6 +102,26 @@ const cashOut = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 
         data: result
     });
 }));
+// Set transacton parameters
+const createTransactionParameters = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield transaction_services_1.TransactionServices.createTransactionParameters(req.body);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'Transaction parameter crated successfully.',
+        data: result
+    });
+}));
+// update transacton parameters
+const updateTransactionParameters = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield transaction_services_1.TransactionServices.updateTransactionParameter(req.body);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'Transaction parameter updated successfully.',
+        data: result
+    });
+}));
 exports.TransactionControllers = {
     addMoneyToWallet,
     withdrawMoneyFromWallet,
@@ -107,5 +129,7 @@ exports.TransactionControllers = {
     getAllTransactionHistory,
     cashIn,
     cashOut,
-    getAllTransactions
+    getAllTransactions,
+    createTransactionParameters,
+    updateTransactionParameters
 };

@@ -22,3 +22,6 @@ exports.transactionRouter.post('/cash-in', (0, validateRequest_1.validateRequest
 exports.transactionRouter.post('/cash-out', (0, validateRequest_1.validateRequest)(transaction_validations_1.cashOutZodSchema), (0, checkAuth_1.checkAuth)(user_interfaces_1.Role.USER), transaction_controllers_1.TransactionControllers.cashOut);
 // Get all transactions
 exports.transactionRouter.get('/', (0, checkAuth_1.checkAuth)(user_interfaces_1.Role.ADMIN), transaction_controllers_1.TransactionControllers.getAllTransactions);
+// Set transaction parameters
+exports.transactionRouter.post('/parameters/create', (0, checkAuth_1.checkAuth)(user_interfaces_1.Role.ADMIN), (0, validateRequest_1.validateRequest)(transaction_validations_1.transactionParameterCreationZodSchema), transaction_controllers_1.TransactionControllers.createTransactionParameters);
+exports.transactionRouter.patch('/parameters/update', (0, checkAuth_1.checkAuth)(user_interfaces_1.Role.ADMIN), (0, validateRequest_1.validateRequest)(transaction_validations_1.transactionParameterUpdateZodSchema), transaction_controllers_1.TransactionControllers.updateTransactionParameters);

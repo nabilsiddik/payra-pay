@@ -21,7 +21,7 @@ const handleAgentRequest = async(req: Request) => {
     }
 
     // Update agent request status
-    const updatedAgentRequestStaus = await AgentRequest.findByIdAndUpdate(agentReqId, {status}, {new: true})
+    const updatedAgentRequestStaus = await AgentRequest.findByIdAndUpdate(agentReqId, {status}, {new: true, runValidators: true})
 
     return updatedAgentRequestStaus
 

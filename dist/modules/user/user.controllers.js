@@ -41,12 +41,14 @@ exports.updateUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
 }));
 // Get all users
 exports.getAllUsers = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_services_1.UserServices.getAllUsers();
+    const query = req.query;
+    const result = yield user_services_1.UserServices.getAllUsers(query);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.CREATED,
         success: true,
         message: 'All user retrived successfully.',
-        data: result
+        data: result.users,
+        meta: result.meta
     });
 }));
 // Get all agents

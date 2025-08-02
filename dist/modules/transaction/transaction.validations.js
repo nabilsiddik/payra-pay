@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cashOutZodSchema = exports.cashInZodSchema = exports.sendMoneyZodSchema = exports.withDrawMoneyZodSchema = exports.addMoneyZodSchema = void 0;
+exports.transactionParameterUpdateZodSchema = exports.transactionParameterCreationZodSchema = exports.cashOutZodSchema = exports.cashInZodSchema = exports.sendMoneyZodSchema = exports.withDrawMoneyZodSchema = exports.addMoneyZodSchema = void 0;
 const zod_1 = __importDefault(require("zod"));
 // Add Money payload zod schema
 exports.addMoneyZodSchema = zod_1.default.object({
@@ -53,4 +53,16 @@ exports.cashOutZodSchema = zod_1.default.object({
         .positive('Amount should be positive Number')
         .min(10, 'Minimum add balance amount is 10')
         .max(50000, 'Maximum add balance amount is 50,000 at a time')
+});
+// Transaction parameter payload cration zod schema
+exports.transactionParameterCreationZodSchema = zod_1.default.object({
+    sendMoneyCharge: zod_1.default.number('Value must be a positive number.').positive(),
+    agentCommision: zod_1.default.number('Value must be a positive number.').positive(),
+    cashOutCharge: zod_1.default.number('Value must be a positive number.').positive(),
+});
+// Transaction parameter payload update zod schema
+exports.transactionParameterUpdateZodSchema = zod_1.default.object({
+    sendMoneyCharge: zod_1.default.number('Value must be a positive number.').positive().optional(),
+    agentCommision: zod_1.default.number('Value must be a positive number.').positive().optional(),
+    cashOutCharge: zod_1.default.number('Value must be a positive number.').positive().optional(),
 });

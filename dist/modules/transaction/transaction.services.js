@@ -52,13 +52,29 @@ const mongoose_1 = __importStar(require("mongoose"));
 const wallet_interfaces_1 = require("../wallet/wallet.interfaces");
 const wallet_models_1 = __importDefault(require("../wallet/wallet.models"));
 const transaction_interfaces_1 = require("./transaction.interfaces");
-const transaction_models_1 = __importDefault(require("./transaction.models"));
+const transaction_models_1 = __importStar(require("./transaction.models"));
 const user_models_1 = __importDefault(require("../user/user.models"));
 const user_interfaces_1 = require("../user/user.interfaces");
+const queryBuilder_1 = require("../../app/utils/queryBuilder");
+const transaction_constants_1 = require("./transaction.constants");
 // get all transactions
-const getAllTransactions = () => __awaiter(void 0, void 0, void 0, function* () {
-    const transactions = yield transaction_models_1.default.find();
-    return transactions;
+const getAllTransactions = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    // search, filter, sort, fields, paginate using query builder
+    const queryBuilder = new queryBuilder_1.QueryBuilder(transaction_models_1.default.find(), query);
+    const transactions = yield queryBuilder
+        .search(transaction_constants_1.transactionSearchableFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate();
+    const [data, meta] = yield Promise.all([
+        transactions.build(),
+        queryBuilder.getMeta()
+    ]);
+    return {
+        transactions: data,
+        meta
+    };
 });
 // Business logics of add money to wallet
 const addMoneyToWallet = (req, payload, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
@@ -147,6 +163,16 @@ const withdrawMoneyFromWallet = (req, payload, decodedToken) => __awaiter(void 0
 const sendMoneyToAnotherWallet = (req, payload, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
     const { amount, numberTo } = payload;
     const userId = decodedToken.userId;
+    // Get sendmoney charge in percentage
+    const transactionParameter = yield transaction_models_1.TransactionParameter.findOne();
+    if (!transactionParameter) {
+        throw new appError_1.default(http_status_codes_1.default.NOT_FOUND, 'Transacton parameter not found.');
+    }
+    const sendMoneyChargeInPercentage = transactionParameter.sendMoneyCharge;
+    // calculate send money charge
+    const sendMoneyCharge = Number(amount) * (Number(sendMoneyChargeInPercentage) / 100);
+    // Total amount with send money charge
+    const totalAmountWithSendMoneyCharge = Number(amount) + sendMoneyCharge;
     if (!req.user) {
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User is not available.');
     }
@@ -162,8 +188,8 @@ const sendMoneyToAnotherWallet = (req, payload, decodedToken) => __awaiter(void 
         throw new appError_1.default(http_status_codes_1.default.NOT_FOUND, 'Current user wallet not available.');
     }
     // check if insufficient balance
-    if (currentUserWallet.balance < Number(amount)) {
-        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'Insufficient balance to withdraw.');
+    if (currentUserWallet.balance < Number(totalAmountWithSendMoneyCharge)) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'Insufficient balance to send money.');
     }
     // Check if wallet is blocked or deactivated
     if (currentUserWallet.status === wallet_interfaces_1.WALLET_STATUS.BLOCKED || currentUserWallet.status === wallet_interfaces_1.WALLET_STATUS.DEACTIVATED) {
@@ -184,7 +210,7 @@ const sendMoneyToAnotherWallet = (req, payload, decodedToken) => __awaiter(void 
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `Sorry, You cannot perform this operation. The user wallet you trying to send money is ${currentUserWallet.status}`);
     }
     // Minus balance from current user wallet
-    currentUserWallet.balance -= Number(amount);
+    currentUserWallet.balance -= Number(totalAmountWithSendMoneyCharge);
     yield currentUserWallet.save();
     // Add balance to user wallet
     toUserWallet.balance += Number(amount);
@@ -193,7 +219,9 @@ const sendMoneyToAnotherWallet = (req, payload, decodedToken) => __awaiter(void 
     const transactionPayload = {
         user: objectUserId,
         type: transaction_interfaces_1.TRANSACTION_TYPES.SEND_MONEY,
-        amount: amount,
+        amount: Number(amount),
+        totalAmountWithCharge: totalAmountWithSendMoneyCharge,
+        charge: sendMoneyCharge,
         numberFrom: userFromSendMoney.phone,
         numberTo: userToSendMOney.phone,
         status: transaction_interfaces_1.TRANSACTION_STATUS.COMPLETED,
@@ -275,7 +303,7 @@ const cashIn = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, func
     const transactionPayload = {
         user: objectAgentId,
         type: transaction_interfaces_1.TRANSACTION_TYPES.CASH_IN,
-        amount: amount,
+        amount: Number(amount),
         numberFrom: userAgent.phone,
         numberTo: userToCashIn.phone,
         status: transaction_interfaces_1.TRANSACTION_STATUS.COMPLETED,
@@ -291,6 +319,23 @@ const cashIn = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, func
 const cashOut = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
     const { agentPhoneNumber, cashOutAmount } = payload;
     const userId = decodedToken.userId;
+    // Get cashout charge in percentage
+    const transactionParameter = yield transaction_models_1.TransactionParameter.findOne();
+    if (!transactionParameter) {
+        throw new appError_1.default(http_status_codes_1.default.NOT_FOUND, 'Transacton parameter not found.');
+    }
+    const cashOutChargeInPercentage = transactionParameter.cashOutCharge;
+    const agentCommistionInPercentage = transactionParameter.agentCommision;
+    // calculate cash out charge
+    const cashOutCharge = Number(cashOutAmount) * (Number(cashOutChargeInPercentage) / 100);
+    // Agents commision
+    const agentCommision = cashOutCharge * (Number(agentCommistionInPercentage) / 100);
+    // Payra pay will get
+    const payraPaywillGet = cashOutCharge - agentCommision;
+    // agent will get total
+    const agentsTotal = Number(cashOutAmount) + agentCommision;
+    // Total amount with cashout charge
+    const totalAmountWithCashOutCharge = Number(cashOutAmount) + cashOutCharge;
     if (!userId) {
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User is not available.');
     }
@@ -310,7 +355,7 @@ const cashOut = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, fun
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${cashOutUserWallet.status}`);
     }
     // check if the cash out amount actually available to the users wallet or not
-    if (cashOutUserWallet.balance < cashOutAmount) {
+    if (cashOutUserWallet.balance < totalAmountWithCashOutCharge) {
         throw new appError_1.default(http_status_codes_1.default.NOT_FOUND, 'Insufficient balance to cash out.');
     }
     // find the user agent to cash out
@@ -336,16 +381,20 @@ const cashOut = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, fun
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `Sorry, You cannot perform this operation. Your wallet is ${agentWallet.status}`);
     }
     // Minus balance from current user wallet
-    cashOutUserWallet.balance -= Number(cashOutAmount);
+    cashOutUserWallet.balance -= Number(totalAmountWithCashOutCharge);
     yield cashOutUserWallet.save();
     // Add balance to user wallet
-    agentWallet.balance += Number(cashOutAmount);
+    agentWallet.balance += Number(agentsTotal);
     yield agentWallet.save();
     // Create transaction
     const transactionPayload = {
         user: objectAgentId,
         type: transaction_interfaces_1.TRANSACTION_TYPES.CASH_OUT,
         amount: cashOutAmount,
+        totalAmountWithCharge: totalAmountWithCashOutCharge,
+        charge: cashOutCharge,
+        agentCommision: agentCommision,
+        payraPayGot: payraPaywillGet,
         numberFrom: cashOutUser.phone,
         numberTo: userAgent.phone,
         status: transaction_interfaces_1.TRANSACTION_STATUS.COMPLETED,
@@ -357,6 +406,26 @@ const cashOut = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, fun
         transaction
     };
 });
+// crate transactio parameter
+const createTransactionParameters = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // check if transaction parameter already exist
+    const transactionParameter = yield transaction_models_1.TransactionParameter.findOne();
+    if (transactionParameter) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'Transaction parameter already available. You can just update the parameters value now.');
+    }
+    const createdParameter = yield transaction_models_1.TransactionParameter.create(payload);
+    return createdParameter;
+});
+// Update transaction parameter
+const updateTransactionParameter = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // check if transaction parameter already exist
+    const transactionParameter = yield transaction_models_1.TransactionParameter.findOne();
+    if (!transactionParameter) {
+        throw new appError_1.default(http_status_codes_1.default.NOT_FOUND, 'Transaction parameter not found.');
+    }
+    const updatedParameter = yield transaction_models_1.TransactionParameter.findOneAndUpdate({}, payload, { new: true });
+    return updatedParameter;
+});
 exports.TransactionServices = {
     addMoneyToWallet,
     withdrawMoneyFromWallet,
@@ -364,5 +433,7 @@ exports.TransactionServices = {
     getAllTransactionHistory,
     cashIn,
     cashOut,
-    getAllTransactions
+    getAllTransactions,
+    createTransactionParameters,
+    updateTransactionParameter
 };
