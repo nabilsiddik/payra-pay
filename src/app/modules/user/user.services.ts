@@ -70,13 +70,28 @@ const updateUser = async (currentUser: CurentUser, payload: Partial<IUser>) => {
     const logedInUser = await User.findById(currentUser.userId)
 
     // If logedIn user not available
-    if(!logedInUser){
+    if (!logedInUser) {
         throw new AppError(StatusCodes.NOT_FOUND, 'Logged in user not found.')
     }
 
-    const updatedUser = await User.findByIdAndUpdate(currentUser.userId, payload, {new: true, runValidators: true})
+    const updatedUser = await User.findByIdAndUpdate(currentUser.userId, payload, { new: true, runValidators: true })
 
     return updatedUser
+}
+
+
+// Delete User
+const deleteUser = async (userId: string) => {
+    const isUser = await User.findById(userId)
+
+    // If user not available with that id
+    if (!isUser) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'User not exist.')
+    }
+
+    const deleteUser = await User.findByIdAndDelete(userId)
+
+    return deleteUser
 }
 
 
@@ -87,11 +102,11 @@ const getAllUsers = async (query: Record<string, string>) => {
     const queryBuilder = new QueryBuilder(User.find(), query)
 
     const users = await queryBuilder
-    .search(userSearchableFields)
-    .filter()
-    .sort()
-    .fields()
-    .paginate()
+        .search(userSearchableFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate()
 
     const [data, meta] = await Promise.all([
         users.build(),
@@ -102,6 +117,19 @@ const getAllUsers = async (query: Record<string, string>) => {
         users: data,
         meta
     }
+}
+
+// get me
+const getMe = async (decodedToken: JwtPayload) => {
+    const userId = decodedToken?.userId
+
+    if (!userId) {
+        throw new AppError(statusCodes.BAD_REQUEST, 'User does not exist while getting self information.')
+    }
+
+    const user = await User.findById(userId).select('-password');
+
+    return user
 }
 
 // Get all agents
@@ -147,5 +175,7 @@ export const UserServices = {
     updateUser,
     getAllUsers,
     getAllAgents,
-    becomeAnAgent
+    becomeAnAgent,
+    getMe,
+    deleteUser
 }

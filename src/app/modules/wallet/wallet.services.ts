@@ -4,11 +4,25 @@ import StatusCodes from "http-status-codes";
 import { CurentUser, WALLET_STATUS } from "./wallet.interfaces";
 import User from "../user/user.models";
 import AppError from "../../errorHelpers/appError";
+import { JwtPayload } from "jsonwebtoken";
 
 // get all wallets
 const getAllWallets = async () => {
     const wallets = await Wallet.find()
     return wallets
+}
+
+// get loged in user wallet
+const getSingleWallet = async (decodedToken: JwtPayload) => {
+    const userId = decodedToken.userId
+
+    if(!userId){
+        throw new AppError(StatusCodes.NOT_FOUND, 'User id not found while getting single wallet.')
+    }
+
+    const logedInUserWallet = await Wallet.findOne({user: userId})
+
+    return logedInUserWallet
 }
 
 // block a wallet
@@ -144,5 +158,6 @@ export const WalletServices = {
     blockWallet,
     unblockWallet,
     deactivateOwnWallet,
-    activateOwnWallet
+    activateOwnWallet,
+    getSingleWallet
 }

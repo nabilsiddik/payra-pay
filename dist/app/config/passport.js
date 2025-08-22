@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
 const passport_local_1 = require("passport-local");
-const user_models_1 = __importDefault(require("../../modules/user/user.models"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const user_models_1 = __importDefault(require("../modules/user/user.models"));
 passport_1.default.use(new passport_local_1.Strategy({
     usernameField: "email",
     passwordField: "password"

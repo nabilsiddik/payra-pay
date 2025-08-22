@@ -4,6 +4,7 @@ import { WalletServices } from "./wallet.services";
 import { CurentUser } from "./wallet.interfaces";
 import { catchAsync } from "../../errorHelpers/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
+import { JwtPayload } from "jsonwebtoken";
 
 // Get all wallets
 const getAllWallets = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
@@ -13,6 +14,19 @@ const getAllWallets = catchAsync(async(req: Request, res: Response, next: NextFu
         statusCode: statusCodes.OK,
         success: true,
         message: 'Successfully retrived all wallets.',
+        data: result
+    })
+})
+
+// Get current user wallet
+const getSingleWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload
+    const result = await WalletServices.getSingleWallet(decodedToken)
+
+    sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: 'Single wallet retrived successfully.',
         data: result
     })
 })
@@ -75,5 +89,6 @@ export const WalletControllers = {
     blockWallet,
     unblockWallet,
     deactivateOwnWallet,
-    activateOwnWallet
+    activateOwnWallet,
+    getSingleWallet
 }

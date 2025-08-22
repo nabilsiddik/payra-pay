@@ -33,6 +33,22 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+
+// delete user
+export const deleteUser = catchAsync(async (req: Request, res: Response) => {
+
+    const userId = req.params.id
+    const result = await UserServices.deleteUser(userId)
+
+    sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: 'User Deleted.',
+        data: result
+    })
+})
+
+
 // Get all users
 export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
     const query = req.query as Record<string, string>
@@ -46,6 +62,20 @@ export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
         meta: result.meta
     })
 })
+
+// Get me
+export const getMe = catchAsync(async (req: Request, res: Response) => {
+    const decodedToken = req.user as JwtPayload
+    const result = await UserServices.getMe(decodedToken)
+
+    sendResponse(res, {
+        statusCode: statusCodes.CREATED,
+        success: true,
+        message: 'Current user info retrive successfylly.',
+        data: result,
+    })
+})
+
 
 // Get all agents
 export const getAllAgents = catchAsync(async (req: Request, res: Response) => {
@@ -80,5 +110,7 @@ export const UserControllers = {
     updateUser,
     getAllUsers,
     getAllAgents,
-    becomeAnAgent
+    becomeAnAgent,
+    getMe,
+    deleteUser
 }

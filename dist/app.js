@@ -15,7 +15,10 @@ require("./app/config/passport");
 const PORT = process.env.PORT || 5000;
 dotenv_1.default.config();
 exports.app.use(express_1.default.json());
-exports.app.use((0, cors_1.default)());
+exports.app.use((0, cors_1.default)({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 exports.app.use(passport_1.default.initialize());
 exports.app.use('/api/v1', routes_1.router);
 exports.app.get('/', (req, res) => {

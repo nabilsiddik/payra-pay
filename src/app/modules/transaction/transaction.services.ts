@@ -16,7 +16,7 @@ import AppError from "../../errorHelpers/appError";
 // get all transactions
 const getAllTransactions = async (query: Record<string, string>) => {
     // search, filter, sort, fields, paginate using query builder
-    const queryBuilder = new QueryBuilder(Transaction.find(), query)
+    const queryBuilder = new QueryBuilder(Transaction.find().populate("user", "name email"), query)
 
     const transactions = await queryBuilder
     .search(transactionSearchableFields)
@@ -24,6 +24,7 @@ const getAllTransactions = async (query: Record<string, string>) => {
     .sort()
     .fields()
     .paginate()
+
 
     const [data, meta] = await Promise.all([
         transactions.build(),
@@ -41,6 +42,8 @@ const addMoneyToWallet = async (req: Request, payload: Partial<IWallet>, decoded
     // amount to be added
     const { balance } = payload
     const userId = decodedToken.userId
+
+    console.log(balance)
 
     if (balance === 0) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Balance must be greater than 0.')

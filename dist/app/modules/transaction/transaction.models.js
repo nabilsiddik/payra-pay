@@ -1,8 +1,9 @@
-import { model, Schema } from "mongoose";
-import { TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interfaces";
-
-
-const transactionParameterSchema = new Schema({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TransactionParameter = void 0;
+const mongoose_1 = require("mongoose");
+const transaction_interfaces_1 = require("./transaction.interfaces");
+const transactionParameterSchema = new mongoose_1.Schema({
     sendMoneyCharge: {
         type: Number,
         requird: true,
@@ -18,20 +19,18 @@ const transactionParameterSchema = new Schema({
 }, {
     timestamps: true,
     versionKey: false
-}) 
-export const TransactionParameter = model('TransactionParameter', transactionParameterSchema)
-
+});
+exports.TransactionParameter = (0, mongoose_1.model)('TransactionParameter', transactionParameterSchema);
 // Define transaction model
-const transactionSchema = new Schema({
+const transactionSchema = new mongoose_1.Schema({
     user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose_1.Schema.Types.ObjectId,
         required: true,
-        ref: 'User'
     },
     type: {
         type: String,
         required: true,
-        enum: Object.values(TRANSACTION_TYPES)
+        enum: Object.values(transaction_interfaces_1.TRANSACTION_TYPES)
     },
     amount: {
         type: Number,
@@ -52,8 +51,8 @@ const transactionSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: Object.values(TRANSACTION_STATUS),
-        default: TRANSACTION_STATUS.PENDING
+        enum: Object.values(transaction_interfaces_1.TRANSACTION_STATUS),
+        default: transaction_interfaces_1.TRANSACTION_STATUS.PENDING
     },
     numberFrom: {
         type: String,
@@ -70,7 +69,6 @@ const transactionSchema = new Schema({
 }, {
     timestamps: true,
     versionKey: false
-})
-
-const Transaction = model('Transaction', transactionSchema)
-export default Transaction
+});
+const Transaction = (0, mongoose_1.model)('Transaction', transactionSchema);
+exports.default = Transaction;

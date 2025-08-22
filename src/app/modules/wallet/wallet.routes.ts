@@ -8,6 +8,9 @@ export const walletRouter = Router()
 // Get all wallets
 walletRouter.get('/', checkAuth(Role.ADMIN), WalletControllers.getAllWallets)
 
+// Get Logged in User Wallet
+walletRouter.get('/:id', checkAuth(...Object.values(Role)), WalletControllers.getSingleWallet)
+
 // Block a wallet
 walletRouter.patch('/block/:id', checkAuth(Role.ADMIN), WalletControllers.blockWallet)
 

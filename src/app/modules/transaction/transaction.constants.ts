@@ -1,1 +1,1 @@
-export const transactionSearchableFields = ['type', 'status']
+export const transactionSearchableFields = ['type', 'status', 'numberFrom', 'numberTo']

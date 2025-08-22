@@ -11,8 +11,12 @@ export const userRouter = Router()
 userRouter.post("/register", validateRequest(createUserZodSchema), UserControllers.createUser);
 // Update user
 userRouter.patch("/", validateRequest(updateUserZodSchema), checkAuth(...Object.values(Role)), UserControllers.updateUser);
+// Delete user
+userRouter.delete("/:id",  checkAuth(Role.ADMIN), UserControllers.deleteUser);
 // get all users
 userRouter.get("/", checkAuth(Role.ADMIN), UserControllers.getAllUsers);
+// get loged in user
+userRouter.get("/me", checkAuth(...Object.values(Role)), UserControllers.getMe);
 // get all agents
 userRouter.get("/agents", checkAuth(Role.ADMIN), UserControllers.getAllAgents);
 // apply to become agent

@@ -17,8 +17,8 @@ const appError_1 = __importDefault(require("../errorHelpers/appError"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const jwt_1 = require("../utils/jwt");
 const env_1 = require("../config/env");
-const user_models_1 = __importDefault(require("../../modules/user/user.models"));
-const user_interfaces_1 = require("../../modules/user/user.interfaces");
+const user_models_1 = __importDefault(require("../modules/user/user.models"));
+const user_interfaces_1 = require("../modules/user/user.interfaces");
 const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accessToken = req.headers.authorization;

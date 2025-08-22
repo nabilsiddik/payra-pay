@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
 const express_1 = require("express");
-const user_routes_1 = require("../../modules/user/user.routes");
-const auth_routes_1 = require("../../modules/auths/auth.routes");
-const wallet_routes_1 = require("../../modules/wallet/wallet.routes");
-const transaction_routes_1 = require("../../modules/transaction/transaction.routes");
-const agentRequest_routes_1 = require("../../modules/agentRequest/agentRequest.routes");
+const user_routes_1 = require("../modules/user/user.routes");
+const auth_routes_1 = require("../modules/auths/auth.routes");
+const transaction_routes_1 = require("../modules/transaction/transaction.routes");
+const wallet_routes_1 = require("../modules/wallet/wallet.routes");
+const agentRequest_routes_1 = require("../modules/agentRequest/agentRequest.routes");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
