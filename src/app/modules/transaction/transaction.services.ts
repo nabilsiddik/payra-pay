@@ -285,6 +285,8 @@ const cashIn = async (payload: ICashIn, decodedToken: JwtPayload) => {
     const { phone, amount } = payload
     const userId = decodedToken.userId
 
+    console.log(phone)
+
     if (!userId) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
     }
