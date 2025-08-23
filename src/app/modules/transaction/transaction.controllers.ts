@@ -69,13 +69,14 @@ const sendMoneyToAnotherWallet = catchAsync(async (req: Request, res: Response, 
 
 // Get all transaction history
 const getAllTransactionHistory = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query as Record<string, string>
     if (!req.user) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
     }
 
     const decodedToken = req.user
 
-    const result = await TransactionServices.getAllTransactionHistory(req, decodedToken as JwtPayload)
+    const result = await TransactionServices.getAllTransactionHistory(req, decodedToken as JwtPayload, query)
 
     sendResponse(res, {
         statusCode: StatusCodes.OK,

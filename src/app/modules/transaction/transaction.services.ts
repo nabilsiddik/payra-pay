@@ -255,7 +255,7 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
 
 
 // Get all transaction history
-const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload) => {
+const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload, query : Record<string, string>) => {
 
     const userId = decodedToken.userId
 
@@ -267,14 +267,32 @@ const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload) 
 
     // convert userId to an object id
     const objectUserId = new Types.ObjectId(userId)
-    // gett logged in users transactions
-    const transactions = await Transaction.find({ user: objectUserId })
+
+
+    // search, filter, sort, fields, paginate using query builder
+    const queryBuilder = new QueryBuilder(Transaction.find({ user: objectUserId }).populate("user", "name email"), query)
+
+    const transactions = await queryBuilder
+    .search(transactionSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+
 
     if (!transactions) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'No transaction available.')
     }
 
-    return transactions
+    const [data, meta] = await Promise.all([
+        transactions.build(),
+        queryBuilder.getMeta()
+    ])
+    
+    return {
+        transactions: data,
+        meta
+    }
 
 }
 
