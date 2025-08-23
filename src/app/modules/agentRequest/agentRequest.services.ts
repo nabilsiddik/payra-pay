@@ -1,13 +1,15 @@
-import { Request } from "express"
 import statusCodes from 'http-status-codes'
 import AgentRequest from "./agentRequest.models"
 import { HandleAgentPayloadType } from "./agentRequest.interfaces"
 import AppError from "../../errorHelpers/appError"
+import mongoose from "mongoose"
+import { Request } from 'express'
 
-
+// Handle agent request
 const handleAgentRequest = async(req: Request) => {
     const agentReqId = req.params.id
-    const {status}: HandleAgentPayloadType = req.body
+    console.log('abu',agentReqId)
+    const {status} = req.body
 
     if(!status){
         throw new AppError(statusCodes.BAD_REQUEST, 'Status not available.')
@@ -27,6 +29,14 @@ const handleAgentRequest = async(req: Request) => {
 
 }
 
+// Get all agent request
+const getAllAgentRequest = async() => {
+    const agentRequests = await AgentRequest.find()
+    return agentRequests
+}
+
+
 export const AgentRequestServices = {
-    handleAgentRequest
+    handleAgentRequest,
+    getAllAgentRequest
 }

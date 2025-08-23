@@ -4,7 +4,7 @@ import StatusCodes from "http-status-codes";
 import { verifyToken } from "../utils/jwt";
 import { enVars } from "../config/env";
 import User from "../modules/user/user.models";
-import { IsActive } from "../modules/user/user.interfaces";
+import { Status } from "../modules/user/user.interfaces";
 
 export const checkAuth = (...authRoles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -32,8 +32,8 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
 
 
         // If user is blocked or inactive
-        if (existingUser.isActive === IsActive.BLOCKED || existingUser.isActive === IsActive.INACTIVE) {
-            throw new AppError(StatusCodes.BAD_REQUEST, `User is ${existingUser.isActive}`)
+        if (existingUser.status === Status.BLOCKED || existingUser.status === Status.INACTIVE) {
+            throw new AppError(StatusCodes.BAD_REQUEST, `User is ${existingUser.status}`)
         }
 
         // If user is deleted

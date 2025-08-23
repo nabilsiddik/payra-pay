@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-export enum IsActive {
+export enum Status {
     ACTIVE = 'ACTIVE',
     INACTIVE = 'INACTIVE',
     BLOCKED = 'BLOCKED',
@@ -17,13 +17,13 @@ export enum Provider {
     CREDENTIALS = 'credentials'
 }
 
-export interface IAuthProvider{
+export interface IAuthProvider {
     provider: Provider,
     providerId: string
 }
 
 
-export interface IUser{
+export interface IUser {
     _id?: Types.ObjectId,
     name: string;
     email: string;
@@ -33,7 +33,7 @@ export interface IUser{
     address?: string | null;
     isDeleted?: boolean;
     isVerified?: boolean;
-    isActive?: IsActive;
+    status?: Status;
     role?: Role;
     authProvider: IAuthProvider[];
     createdAt: Date;

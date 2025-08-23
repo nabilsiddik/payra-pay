@@ -11,6 +11,8 @@ export const userRouter = Router()
 userRouter.post("/register", validateRequest(createUserZodSchema), UserControllers.createUser);
 // Update user
 userRouter.patch("/", validateRequest(updateUserZodSchema), checkAuth(...Object.values(Role)), UserControllers.updateUser);
+// Update user Status
+userRouter.patch("/:id/status", checkAuth(Role.ADMIN), UserControllers.updateUserStatus);
 // Delete user
 userRouter.delete("/:id",  checkAuth(Role.ADMIN), UserControllers.deleteUser);
 // get all users

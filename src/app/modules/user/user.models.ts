@@ -1,5 +1,5 @@
 import {model, Schema} from 'mongoose'
-import { IsActive, Provider, Role } from './user.interfaces'
+import { Provider, Role, Status } from './user.interfaces'
 
 // Auth provider schema definition
 const authProviderSchema = new Schema({
@@ -47,10 +47,10 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
-    isActive: {
+    status: {
         type: String,
-        enum: Object.values(IsActive),
-        default: IsActive.ACTIVE,
+        enum: Object.values(Status),
+        default: Status.ACTIVE,
     },
     role: {
         type: String,

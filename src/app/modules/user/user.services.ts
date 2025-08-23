@@ -13,6 +13,7 @@ import { userSearchableFields } from "./user.constants";
 import AppError from "../../errorHelpers/appError";
 import { enVars } from "../../config/env";
 import { QueryBuilder } from "../../utils/queryBuilder";
+import { Request } from "express";
 
 
 // Service logics for creating a new user
@@ -170,6 +171,39 @@ const becomeAnAgent = async (payload: JwtPayload) => {
 
 }
 
+
+// update user status
+const updateUserStatus = async (req: Request) => {
+    const userId = req.params.id
+    const {status} = req.body
+
+    if (!userId) {
+        throw new AppError(statusCodes.BAD_REQUEST, 'Userid not found while update user status.')
+    }
+
+    if (!status) {
+        throw new AppError(statusCodes.BAD_REQUEST, 'User status not found while update user status.')
+    }
+
+    const user = await User.findById(userId).select('-password');
+
+    if (!user) {
+        throw new AppError(statusCodes.BAD_REQUEST, 'User status not found while update user status.')
+    }
+
+    if (!["BLOCKED", "ACTIVE", "INACTIVE"].includes(status)) {
+        throw new AppError(statusCodes.BAD_REQUEST, `Invalid Status`)
+    }
+
+    if (user.status === status) {
+        throw new AppError(statusCodes.BAD_REQUEST, `User status is already ${status}`)
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, { status }, { runValidators: true, new: true })
+
+    return updatedUser
+}
+
 export const UserServices = {
     createUser,
     updateUser,
@@ -177,5 +211,6 @@ export const UserServices = {
     getAllAgents,
     becomeAnAgent,
     getMe,
-    deleteUser
+    deleteUser,
+    updateUserStatus
 }

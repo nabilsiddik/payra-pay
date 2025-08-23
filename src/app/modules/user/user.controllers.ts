@@ -103,6 +103,19 @@ export const becomeAnAgent = catchAsync(async (req: Request, res: Response) => {
 })
 
 
+// Update user Status
+export const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
+    const result = await UserServices.updateUserStatus(req)
+
+    sendResponse(res, {
+        statusCode: statusCodes.CREATED,
+        success: true,
+        message: 'User status updated.',
+        data: result
+    })
+})
+
+
 
 
 export const UserControllers = {
@@ -112,5 +125,6 @@ export const UserControllers = {
     getAllAgents,
     becomeAnAgent,
     getMe,
-    deleteUser
+    deleteUser,
+    updateUserStatus
 }

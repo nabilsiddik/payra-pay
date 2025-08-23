@@ -1,5 +1,5 @@
 import z from 'zod'
-import { IsActive, Role } from './user.interfaces'
+import { Role, Status } from './user.interfaces'
 
 // Crate user zod schema
 export const createUserZodSchema = z.object({
@@ -43,7 +43,7 @@ export const updateUserZodSchema = z.object({
         .optional(),
 
 
-    isActive: z.enum(Object.values(IsActive) as [string])
+    status: z.enum(Object.values(Status) as [string])
         .optional(),
 
     isDeleted: z.boolean()

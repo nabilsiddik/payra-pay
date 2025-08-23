@@ -16,7 +16,20 @@ export const handleAgentRequest = catchAsync(async (req: Request, res: Response,
     })
 })
 
+// Get all agent request
+export const getAllAgentRequest = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const result = await AgentRequestServices.getAllAgentRequest()
+
+    sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: 'All Agent Request retrived.',
+        data: result
+    })
+})
+
 
 export const AgentRequestControllers = {
-    handleAgentRequest
+    handleAgentRequest,
+    getAllAgentRequest
 }

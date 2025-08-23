@@ -5,11 +5,12 @@ import { AgentRequestStatus } from './agentRequest.interfaces'
 const agentRequestSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
-        enum: Object.values(AgentRequestStatus),
+        ref: 'User',
         required: true,
     },
     status: {
         type: String,
+        enum: Object.values(AgentRequestStatus),
         required: true,
         default: AgentRequestStatus.PENDING
     }
