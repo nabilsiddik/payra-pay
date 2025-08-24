@@ -13,6 +13,8 @@ userRouter.post("/register", validateRequest(createUserZodSchema), UserControlle
 userRouter.patch("/", validateRequest(updateUserZodSchema), checkAuth(...Object.values(Role)), UserControllers.updateUser);
 // Update user Status
 userRouter.patch("/:id/status", checkAuth(Role.ADMIN), UserControllers.updateUserStatus);
+// change user password
+userRouter.patch("/change-password", checkAuth(...Object.values(Role)), UserControllers.changeUserPassword);
 // Delete user
 userRouter.delete("/:id",  checkAuth(Role.ADMIN), UserControllers.deleteUser);
 // get all users

@@ -115,6 +115,19 @@ export const updateUserStatus = catchAsync(async (req: Request, res: Response) =
     })
 })
 
+// Change user password
+export const changeUserPassword = catchAsync(async (req: Request, res: Response) => {
+    const decodedToken = req.user as JwtPayload
+    const result = await UserServices.changeUserPassword(req, decodedToken)
+
+    sendResponse(res, {
+        statusCode: statusCodes.CREATED,
+        success: true,
+        message: 'Password changed.',
+        data: result
+    })
+})
+
 
 
 
@@ -126,5 +139,6 @@ export const UserControllers = {
     becomeAnAgent,
     getMe,
     deleteUser,
-    updateUserStatus
+    updateUserStatus,
+    changeUserPassword
 }

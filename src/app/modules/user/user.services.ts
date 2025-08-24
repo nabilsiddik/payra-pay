@@ -15,7 +15,6 @@ import { enVars } from "../../config/env";
 import { QueryBuilder } from "../../utils/queryBuilder";
 import { Request } from "express";
 
-
 // Service logics for creating a new user
 const createUser = async (payload: IUser) => {
 
@@ -204,6 +203,35 @@ const updateUserStatus = async (req: Request) => {
     return updatedUser
 }
 
+
+// Change user password
+const changeUserPassword = async (req: Request, decodedToken: JwtPayload) => {
+    const userId = decodedToken.userId
+    const {currentPassword, newPassword} = req.body
+
+    if (!userId) {
+        throw new AppError(statusCodes.BAD_REQUEST, 'Userid not found while update user password.')
+    }
+
+    const user = await User.findById(userId)
+
+    if (!user) {
+        throw new AppError(statusCodes.BAD_REQUEST, 'User status not found while update user password.')
+    }
+
+    const isPasswordMatch = await bcrypt.compare(currentPassword, user?.password as string)
+
+    if(!isPasswordMatch){
+        throw new AppError(statusCodes.BAD_REQUEST, 'Password does not matched.')
+    }
+
+    const newHashedPassword = await bcrypt.hash(newPassword, Number(enVars.SALT_ROUND))
+
+    const updatedUser = await User.findByIdAndUpdate(userId, { password: newHashedPassword }, { runValidators: true, new: true })
+
+    return updatedUser
+}
+
 export const UserServices = {
     createUser,
     updateUser,
@@ -212,5 +240,6 @@ export const UserServices = {
     becomeAnAgent,
     getMe,
     deleteUser,
-    updateUserStatus
+    updateUserStatus,
+    changeUserPassword
 }
