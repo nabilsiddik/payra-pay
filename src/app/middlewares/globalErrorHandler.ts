@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import {  Request, Response } from "express";
 import { enVars } from "../config/env";
 import { TErrorSources } from "../types/error.types";
 import { handleDuplicateError } from "../errorHelpers/handleDuplicateError";
@@ -7,7 +7,7 @@ import { handleZodError } from "../errorHelpers/handleZodError";
 import { handleValidationError } from "../errorHelpers/handleValidationError";
 import AppError from "../errorHelpers/appError";
 
-export const globalErrorHandler = async (error: any, req: Request, res: Response, next: NextFunction) => {
+export const globalErrorHandler = async (error: any, req: Request, res: Response) => {
     if (enVars.NODE_ENV === 'development') {
         console.log(error)
     }

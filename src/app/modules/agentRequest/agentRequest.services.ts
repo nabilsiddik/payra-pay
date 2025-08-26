@@ -1,11 +1,10 @@
 import statusCodes from 'http-status-codes'
 import AgentRequest from "./agentRequest.models"
-import { AgentRequestStatus, HandleAgentPayloadType } from "./agentRequest.interfaces"
+import { AgentRequestStatus } from "./agentRequest.interfaces"
 import AppError from "../../errorHelpers/appError"
-import mongoose from "mongoose"
 import { Request } from 'express'
 import User from '../user/user.models'
-import { Role, Status } from '../user/user.interfaces'
+import { Role } from '../user/user.interfaces'
 
 // Handle agent request
 const handleAgentRequest = async (req: Request) => {

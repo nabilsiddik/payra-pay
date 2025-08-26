@@ -6,3 +6,4 @@ const auth_controllers_1 = require("./auth.controllers");
 exports.authRouter = (0, express_1.Router)();
 // Login
 exports.authRouter.post('/login', auth_controllers_1.AuthControllers.credentialLogin);
+exports.authRouter.post('/logout', auth_controllers_1.AuthControllers.logOut);

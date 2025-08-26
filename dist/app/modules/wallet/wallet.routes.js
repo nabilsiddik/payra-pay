@@ -8,6 +8,8 @@ const checkAuth_1 = require("../../middlewares/checkAuth");
 exports.walletRouter = (0, express_1.Router)();
 // Get all wallets
 exports.walletRouter.get('/', (0, checkAuth_1.checkAuth)(user_interfaces_1.Role.ADMIN), wallet_controllers_1.WalletControllers.getAllWallets);
+// Get Logged in User Wallet
+exports.walletRouter.get('/:id', (0, checkAuth_1.checkAuth)(...Object.values(user_interfaces_1.Role)), wallet_controllers_1.WalletControllers.getSingleWallet);
 // Block a wallet
 exports.walletRouter.patch('/block/:id', (0, checkAuth_1.checkAuth)(user_interfaces_1.Role.ADMIN), wallet_controllers_1.WalletControllers.blockWallet);
 // Unblock a wallet

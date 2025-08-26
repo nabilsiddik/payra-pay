@@ -18,6 +18,7 @@ exports.createUserZodSchema = zod_1.default.object({
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, { message: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, one special character and one number.' }),
     phone: zod_1.default.string()
         .regex(/^(?:\+88|88)?01[3-9]\d{8}$/, { message: 'Invalid Phone Number.' }),
+    role: zod_1.default.enum(['USER', 'AGENT']),
     address: zod_1.default.string()
         .max(200, { message: 'Address can not exced 200 characters.' })
         .optional()
@@ -32,12 +33,14 @@ exports.updateUserZodSchema = zod_1.default.object({
         min(8, { message: 'Password minimum length is 8.' })
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, { message: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, one special character and one number.' })
         .optional(),
+    phone: zod_1.default.string()
+        .regex(/^(?:\+88|88)?01[3-9]\d{8}$/, { message: 'Invalid Phone Number.' }),
     address: zod_1.default.string()
         .max(200, { message: 'Address can not exced 200 characters.' })
         .optional(),
     role: zod_1.default.enum(Object.values(user_interfaces_1.Role))
         .optional(),
-    isActive: zod_1.default.enum(Object.values(user_interfaces_1.IsActive))
+    status: zod_1.default.enum(Object.values(user_interfaces_1.Status))
         .optional(),
     isDeleted: zod_1.default.boolean()
         .optional(),

@@ -19,7 +19,7 @@ const catchAsync_1 = require("../../errorHelpers/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
 const appError_1 = __importDefault(require("../../errorHelpers/appError"));
 // Get all transactions
-const getAllTransactions = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllTransactions = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.query;
     const result = yield transaction_services_1.TransactionServices.getAllTransactions(query);
     (0, sendResponse_1.sendResponse)(res, {
@@ -31,7 +31,7 @@ const getAllTransactions = (0, catchAsync_1.catchAsync)((req, res, next) => __aw
     });
 }));
 // Add money to wallet
-const addMoneyToWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const addMoneyToWallet = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const payload = req.body;
     const decodedToken = req.user;
     const result = yield transaction_services_1.TransactionServices.addMoneyToWallet(req, payload, decodedToken);
@@ -43,7 +43,7 @@ const addMoneyToWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
     });
 }));
 // Withdraw money from wallet
-const withdrawMoneyFromWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const withdrawMoneyFromWallet = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const payload = req.body;
     const decodedToken = req.user;
     const result = yield transaction_services_1.TransactionServices.withdrawMoneyFromWallet(req, payload, decodedToken);
@@ -55,7 +55,7 @@ const withdrawMoneyFromWallet = (0, catchAsync_1.catchAsync)((req, res, next) =>
     });
 }));
 // send money to another wallet
-const sendMoneyToAnotherWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const sendMoneyToAnotherWallet = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const payload = req.body;
     const decodedToken = req.user;
     const result = yield transaction_services_1.TransactionServices.sendMoneyToAnotherWallet(req, payload, decodedToken);
@@ -67,12 +67,13 @@ const sendMoneyToAnotherWallet = (0, catchAsync_1.catchAsync)((req, res, next) =
     });
 }));
 // Get all transaction history
-const getAllTransactionHistory = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllTransactionHistory = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = req.query;
     if (!req.user) {
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User is not available.');
     }
     const decodedToken = req.user;
-    const result = yield transaction_services_1.TransactionServices.getAllTransactionHistory(req, decodedToken);
+    const result = yield transaction_services_1.TransactionServices.getAllTransactionHistory(req, decodedToken, query);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
         success: true,
@@ -81,7 +82,7 @@ const getAllTransactionHistory = (0, catchAsync_1.catchAsync)((req, res, next) =
     });
 }));
 // Cash in to any user wallet by an agent only
-const cashIn = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const cashIn = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const decodedToken = req.user;
     const result = yield transaction_services_1.TransactionServices.cashIn(req.body, decodedToken);
     (0, sendResponse_1.sendResponse)(res, {
@@ -92,7 +93,7 @@ const cashIn = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0
     });
 }));
 // Cash out from any user wallet by an agent only
-const cashOut = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const cashOut = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const decodedToken = req.user;
     const result = yield transaction_services_1.TransactionServices.cashOut(req.body, decodedToken);
     (0, sendResponse_1.sendResponse)(res, {
@@ -103,7 +104,7 @@ const cashOut = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 
     });
 }));
 // Set transacton parameters
-const createTransactionParameters = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const createTransactionParameters = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield transaction_services_1.TransactionServices.createTransactionParameters(req.body);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
@@ -113,7 +114,7 @@ const createTransactionParameters = (0, catchAsync_1.catchAsync)((req, res, next
     });
 }));
 // update transacton parameters
-const updateTransactionParameters = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const updateTransactionParameters = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield transaction_services_1.TransactionServices.updateTransactionParameter(req.body);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,

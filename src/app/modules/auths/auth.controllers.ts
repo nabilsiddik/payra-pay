@@ -6,60 +6,58 @@ import AppError from "../../errorHelpers/appError"
 import { createUserTokens } from "../../utils/userTokens"
 import { setAuthCookie } from "../../utils/setCookie"
 import { sendResponse } from "../../utils/sendResponse"
+import { enVars } from "../../config/env"
 
 // Credential login
 const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    // throw error if not provided any credential info
-    if (!req.body) {
-        throw new AppError(statusCodes.NOT_FOUND, 'Request body not found while credential login.')
+  // throw error if not provided any credential info
+  if (!req.body) {
+    throw new AppError(statusCodes.NOT_FOUND, 'Request body not found while credential login.')
+  }
+
+  passport.authenticate("local", async (error: any, user: any, info: any) => {
+
+    if (error) {
+      return next(new AppError(401, error))
     }
 
-    passport.authenticate("local", async (error: any, user: any, info: any) => {
+    if (!user) {
+      return next(new AppError(401, info.message))
+    }
 
-        if (error) {
-            return next(new AppError(401, error))
-        }
+    // user tokens
+    const userTokens = createUserTokens(user)
 
-        if (!user) {
-            return next(new AppError(401, info.message))
-        }
+    // Set access token or refresh token into cookie
+    setAuthCookie(res, userTokens)
 
-        // user tokens
-        const userTokens = createUserTokens(user)
-
-        // Take the rest of the user info without password
-        const {password, ...rest} = user.toObject()
-
-        // Set access token or refresh token into cookie
-        setAuthCookie(res, userTokens)
-
-        // Send response
-        sendResponse(res, {
-            statusCode: statusCodes.OK,
-            success: true,
-            message: 'User Successfully Loged In',
-            data: {
-                accessToken: userTokens.accessToken,
-                refreshToken: userTokens.refreshToken,
-                user: rest
-            }
-        })
-    })(req, res, next)
+    // Send response
+    sendResponse(res, {
+      statusCode: statusCodes.OK,
+      success: true,
+      message: 'User Successfully Loged In',
+      data: {
+        accessToken: userTokens.accessToken,
+        refreshToken: userTokens.refreshToken,
+        user
+      }
+    })
+  })(req, res, next)
 })
 
 // Logout
 const logOut = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: enVars.NODE_ENV === 'production',
+      sameSite: false,
     });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: false,
-      sameSite: "lax",
+      sameSite: false,
     });
 
     sendResponse(res, {
@@ -72,6 +70,6 @@ const logOut = catchAsync(
 );
 
 export const AuthControllers = {
-    credentialLogin,
-    logOut
+  credentialLogin,
+  logOut
 }

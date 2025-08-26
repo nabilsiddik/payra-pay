@@ -19,7 +19,7 @@ const handleCastError_1 = require("../errorHelpers/handleCastError");
 const handleZodError_1 = require("../errorHelpers/handleZodError");
 const handleValidationError_1 = require("../errorHelpers/handleValidationError");
 const appError_1 = __importDefault(require("../errorHelpers/appError"));
-const globalErrorHandler = (error, req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const globalErrorHandler = (error, req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (env_1.enVars.NODE_ENV === 'development') {
         console.log(error);
     }

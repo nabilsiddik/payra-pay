@@ -26,6 +26,10 @@ const transactionSchema = new mongoose_1.Schema({
     user: {
         type: mongoose_1.Schema.Types.ObjectId,
         required: true,
+        ref: 'User'
+    },
+    agent: {
+        type: mongoose_1.Schema.Types.ObjectId,
     },
     type: {
         type: String,

@@ -18,7 +18,7 @@ const wallet_services_1 = require("./wallet.services");
 const catchAsync_1 = require("../../errorHelpers/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
 // Get all wallets
-const getAllWallets = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllWallets = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield wallet_services_1.WalletServices.getAllWallets();
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
@@ -27,8 +27,19 @@ const getAllWallets = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter
         data: result
     });
 }));
+// Get current user wallet
+const getSingleWallet = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const decodedToken = req.user;
+    const result = yield wallet_services_1.WalletServices.getSingleWallet(decodedToken);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'Single wallet retrived successfully.',
+        data: result
+    });
+}));
 // Block wallet
-const blockWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const blockWallet = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield wallet_services_1.WalletServices.blockWallet(req);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
@@ -38,7 +49,7 @@ const blockWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(v
     });
 }));
 // Unblock wallet
-const unblockWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const unblockWallet = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield wallet_services_1.WalletServices.unblockWallet(req);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
@@ -48,7 +59,7 @@ const unblockWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter
     });
 }));
 // Deactivate own wallet
-const deactivateOwnWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const deactivateOwnWallet = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield wallet_services_1.WalletServices.deactivateOwnWallet(req.user);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
@@ -58,7 +69,7 @@ const deactivateOwnWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __a
     });
 }));
 // Deactivate own wallet
-const activateOwnWallet = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const activateOwnWallet = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield wallet_services_1.WalletServices.activateOwnWallet(req.user);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
@@ -72,5 +83,6 @@ exports.WalletControllers = {
     blockWallet,
     unblockWallet,
     deactivateOwnWallet,
-    activateOwnWallet
+    activateOwnWallet,
+    getSingleWallet
 };

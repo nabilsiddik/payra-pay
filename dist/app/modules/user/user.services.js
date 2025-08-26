@@ -82,6 +82,16 @@ const updateUser = (currentUser, payload) => __awaiter(void 0, void 0, void 0, f
     const updatedUser = yield user_models_1.default.findByIdAndUpdate(currentUser.userId, payload, { new: true, runValidators: true });
     return updatedUser;
 });
+// Delete User
+const deleteUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const isUser = yield user_models_1.default.findById(userId);
+    // If user not available with that id
+    if (!isUser) {
+        throw new appError_1.default(http_status_codes_2.default.NOT_FOUND, 'User not exist.');
+    }
+    const deleteUser = yield user_models_1.default.findByIdAndDelete(userId);
+    return deleteUser;
+});
 // Get all users
 const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
     // search, filter, sort, fields, paginate using query builder
@@ -100,6 +110,15 @@ const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
         users: data,
         meta
     };
+});
+// get me
+const getMe = (decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = decodedToken === null || decodedToken === void 0 ? void 0 : decodedToken.userId;
+    if (!userId) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User does not exist while getting self information.');
+    }
+    const user = yield user_models_1.default.findById(userId).select('-password');
+    return user;
 });
 // Get all agents
 const getAllAgents = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -129,10 +148,56 @@ const becomeAnAgent = (payload) => __awaiter(void 0, void 0, void 0, function* (
     const agentRequest = yield agentRequest_models_1.default.create(agentRequestPayload);
     return agentRequest;
 });
+// update user status
+const updateUserStatus = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.id;
+    const { status } = req.body;
+    if (!userId) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'Userid not found while update user status.');
+    }
+    if (!status) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User status not found while update user status.');
+    }
+    const user = yield user_models_1.default.findById(userId).select('-password');
+    if (!user) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User status not found while update user status.');
+    }
+    if (!["BLOCKED", "ACTIVE", "INACTIVE"].includes(status)) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `Invalid Status`);
+    }
+    if (user.status === status) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `User status is already ${status}`);
+    }
+    const updatedUser = yield user_models_1.default.findByIdAndUpdate(userId, { status }, { runValidators: true, new: true });
+    return updatedUser;
+});
+// Change user password
+const changeUserPassword = (req, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = decodedToken.userId;
+    const { currentPassword, newPassword } = req.body;
+    if (!userId) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'Userid not found while update user password.');
+    }
+    const user = yield user_models_1.default.findById(userId);
+    if (!user) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User status not found while update user password.');
+    }
+    const isPasswordMatch = yield bcryptjs_1.default.compare(currentPassword, user === null || user === void 0 ? void 0 : user.password);
+    if (!isPasswordMatch) {
+        throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'Password does not matched.');
+    }
+    const newHashedPassword = yield bcryptjs_1.default.hash(newPassword, Number(env_1.enVars.SALT_ROUND));
+    const updatedUser = yield user_models_1.default.findByIdAndUpdate(userId, { password: newHashedPassword }, { runValidators: true, new: true });
+    return updatedUser;
+});
 exports.UserServices = {
     createUser,
     updateUser,
     getAllUsers,
     getAllAgents,
-    becomeAnAgent
+    becomeAnAgent,
+    getMe,
+    deleteUser,
+    updateUserStatus,
+    changeUserPassword
 };

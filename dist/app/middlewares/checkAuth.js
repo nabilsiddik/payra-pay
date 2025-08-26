@@ -21,7 +21,7 @@ const user_models_1 = __importDefault(require("../modules/user/user.models"));
 const user_interfaces_1 = require("../modules/user/user.interfaces");
 const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accessToken = req.headers.authorization;
+        const accessToken = req.headers.authorization || req.cookies.accessToken;
         if (!accessToken) {
             throw new appError_1.default(http_status_codes_1.default.UNAUTHORIZED, 'Access token not found.');
         }
@@ -38,8 +38,8 @@ const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0
         //     throw new AppError(StatusCodes.BAD_REQUEST, 'User is not verified.')
         // }
         // If user is blocked or inactive
-        if (existingUser.isActive === user_interfaces_1.IsActive.BLOCKED || existingUser.isActive === user_interfaces_1.IsActive.INACTIVE) {
-            throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `User is ${existingUser.isActive}`);
+        if (existingUser.status === user_interfaces_1.Status.BLOCKED || existingUser.status === user_interfaces_1.Status.INACTIVE) {
+            throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, `User is ${existingUser.status}`);
         }
         // If user is deleted
         if (existingUser.isDateleted) {

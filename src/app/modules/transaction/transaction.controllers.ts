@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express"
+import { Request, Response } from "express"
 import { JwtPayload } from "jsonwebtoken"
 import StatusCodes from 'http-status-codes'
 import { TransactionServices } from "./transaction.services"
@@ -7,7 +7,7 @@ import { sendResponse } from "../../utils/sendResponse"
 import AppError from "../../errorHelpers/appError"
 
 // Get all transactions
-const getAllTransactions = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
     const query = req.query as Record<string, string>
     const result = await TransactionServices.getAllTransactions(query)
 
@@ -21,7 +21,7 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response, next: 
 })
 
 // Add money to wallet
-const addMoneyToWallet = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const addMoneyToWallet = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
     const decodedToken = req.user
 
@@ -36,7 +36,7 @@ const addMoneyToWallet = catchAsync(async (req: Request, res: Response, next: Ne
 })
 
 // Withdraw money from wallet
-const withdrawMoneyFromWallet = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const withdrawMoneyFromWallet = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
     const decodedToken = req.user
 
@@ -52,7 +52,7 @@ const withdrawMoneyFromWallet = catchAsync(async (req: Request, res: Response, n
 
 
 // send money to another wallet
-const sendMoneyToAnotherWallet = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const sendMoneyToAnotherWallet = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
     const decodedToken = req.user
 
@@ -68,7 +68,7 @@ const sendMoneyToAnotherWallet = catchAsync(async (req: Request, res: Response, 
 
 
 // Get all transaction history
-const getAllTransactionHistory = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const getAllTransactionHistory = catchAsync(async (req: Request, res: Response) => {
     const query = req.query as Record<string, string>
     if (!req.user) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
@@ -88,7 +88,7 @@ const getAllTransactionHistory = catchAsync(async (req: Request, res: Response, 
 
 
 // Cash in to any user wallet by an agent only
-const cashIn = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const cashIn = catchAsync(async (req: Request, res: Response) => {
 
     const decodedToken = req.user
 
@@ -104,7 +104,7 @@ const cashIn = catchAsync(async (req: Request, res: Response, next: NextFunction
 
 
 // Cash out from any user wallet by an agent only
-const cashOut = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const cashOut = catchAsync(async (req: Request, res: Response) => {
 
     const decodedToken = req.user
 
@@ -120,7 +120,7 @@ const cashOut = catchAsync(async (req: Request, res: Response, next: NextFunctio
 
 
 // Set transacton parameters
-const createTransactionParameters = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const createTransactionParameters = catchAsync(async (req: Request, res: Response) => {
     const result = await TransactionServices.createTransactionParameters(req.body)
 
     sendResponse(res, {
@@ -133,7 +133,7 @@ const createTransactionParameters = catchAsync(async (req: Request, res: Respons
 
 
 // update transacton parameters
-const updateTransactionParameters = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const updateTransactionParameters = catchAsync(async (req: Request, res: Response) => {
     const result = await TransactionServices.updateTransactionParameter(req.body)
 
     sendResponse(res, {

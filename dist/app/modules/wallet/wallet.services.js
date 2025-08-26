@@ -23,6 +23,15 @@ const getAllWallets = () => __awaiter(void 0, void 0, void 0, function* () {
     const wallets = yield wallet_models_1.default.find();
     return wallets;
 });
+// get loged in user wallet
+const getSingleWallet = (decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = decodedToken.userId;
+    if (!userId) {
+        throw new appError_1.default(http_status_codes_1.default.NOT_FOUND, 'User id not found while getting single wallet.');
+    }
+    const logedInUserWallet = yield wallet_models_1.default.findOne({ user: userId });
+    return logedInUserWallet;
+});
 // block a wallet
 const blockWallet = (req) => __awaiter(void 0, void 0, void 0, function* () {
     const walletId = req.params.id;
@@ -118,5 +127,6 @@ exports.WalletServices = {
     blockWallet,
     unblockWallet,
     deactivateOwnWallet,
-    activateOwnWallet
+    activateOwnWallet,
+    getSingleWallet
 };

@@ -270,7 +270,9 @@ const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload, 
 
 
     // search, filter, sort, fields, paginate using query builder
-    const queryBuilder = new QueryBuilder(Transaction.find({ user: objectUserId }).populate("user", "name email"), query)
+    const queryBuilder = new QueryBuilder(Transaction.find({ 
+        $or: [{user: objectUserId}, {agent: objectUserId}]
+     }).populate("user", "name email"), query)
 
     const transactions = await queryBuilder
     .search(transactionSearchableFields)

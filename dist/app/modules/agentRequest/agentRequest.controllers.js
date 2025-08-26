@@ -12,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AgentRequestControllers = exports.handleAgentRequest = void 0;
+exports.AgentRequestControllers = exports.getAllAgentRequest = exports.handleAgentRequest = void 0;
 const agentRequest_services_1 = require("./agentRequest.services");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const sendResponse_1 = require("../../utils/sendResponse");
 const catchAsync_1 = require("../../errorHelpers/catchAsync");
 // Handle agent request
-exports.handleAgentRequest = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.handleAgentRequest = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield agentRequest_services_1.AgentRequestServices.handleAgentRequest(req);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
@@ -27,6 +27,17 @@ exports.handleAgentRequest = (0, catchAsync_1.catchAsync)((req, res, next) => __
         data: result
     });
 }));
+// Get all agent request
+exports.getAllAgentRequest = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield agentRequest_services_1.AgentRequestServices.getAllAgentRequest();
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'All Agent Request retrived.',
+        data: result
+    });
+}));
 exports.AgentRequestControllers = {
-    handleAgentRequest: exports.handleAgentRequest
+    handleAgentRequest: exports.handleAgentRequest,
+    getAllAgentRequest: exports.getAllAgentRequest
 };

@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from "express"
+import { Request, Response } from "express"
 import { AgentRequestServices } from "./agentRequest.services"
 import statusCodes from 'http-status-codes'
 import { sendResponse } from "../../utils/sendResponse"
 import { catchAsync } from "../../errorHelpers/catchAsync"
 
 // Handle agent request
-export const handleAgentRequest = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const handleAgentRequest = catchAsync(async (req: Request, res: Response) => {
     const result = await AgentRequestServices.handleAgentRequest(req)
 
     sendResponse(res, {
@@ -17,7 +17,7 @@ export const handleAgentRequest = catchAsync(async (req: Request, res: Response,
 })
 
 // Get all agent request
-export const getAllAgentRequest = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const getAllAgentRequest = catchAsync(async (req: Request, res: Response) => {
     const result = await AgentRequestServices.getAllAgentRequest()
 
     sendResponse(res, {

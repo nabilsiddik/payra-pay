@@ -1,5 +1,4 @@
 import express, { Request, Response } from 'express';
-export const app = express();
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { router } from './app/routes';
@@ -7,29 +6,20 @@ import { globalErrorHandler } from './app/middlewares/globalErrorHandler';
 import passport from 'passport';
 import './app/config/passport'
 import cookieParser from "cookie-parser";
-const PORT = process.env.PORT || 5000;
-
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',');
-
-console.log('allowed origins', allowedOrigins)
-
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Not allowed by CORS: ${origin}`));
-    }
-  },
-  credentials: true
-}));
-
 dotenv.config();
-app.use(express.json());
+
+export const app = express();
+app.set('trust proxy', 1)
+app.use(cors({
+  origin: [
+      "https://parya-pay-frontend.vercel.app",
+      "http://localhost:5173"
+    ],
+  credentials: true,
+}))
 
 
-
+app.use(express.json())
 app.use(cookieParser())
 app.use(passport.initialize())
 

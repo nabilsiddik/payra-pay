@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserControllers = exports.becomeAnAgent = exports.getAllAgents = exports.getAllUsers = exports.updateUser = exports.createUser = void 0;
+exports.UserControllers = exports.changeUserPassword = exports.updateUserStatus = exports.becomeAnAgent = exports.getAllAgents = exports.getMe = exports.getAllUsers = exports.deleteUser = exports.updateUser = exports.createUser = void 0;
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const user_services_1 = require("./user.services");
 const catchAsync_1 = require("../../errorHelpers/catchAsync");
@@ -39,6 +39,17 @@ exports.updateUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
         data: result
     });
 }));
+// delete user
+exports.deleteUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.id;
+    const result = yield user_services_1.UserServices.deleteUser(userId);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'User Deleted.',
+        data: result
+    });
+}));
 // Get all users
 exports.getAllUsers = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.query;
@@ -49,6 +60,17 @@ exports.getAllUsers = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 
         message: 'All user retrived successfully.',
         data: result.users,
         meta: result.meta
+    });
+}));
+// Get me
+exports.getMe = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const decodedToken = req.user;
+    const result = yield user_services_1.UserServices.getMe(decodedToken);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.CREATED,
+        success: true,
+        message: 'Current user info retrive successfylly.',
+        data: result,
     });
 }));
 // Get all agents
@@ -71,10 +93,35 @@ exports.becomeAnAgent = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(voi
         data: result
     });
 }));
+// Update user Status
+exports.updateUserStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_services_1.UserServices.updateUserStatus(req);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.CREATED,
+        success: true,
+        message: 'User status updated.',
+        data: result
+    });
+}));
+// Change user password
+exports.changeUserPassword = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const decodedToken = req.user;
+    const result = yield user_services_1.UserServices.changeUserPassword(req, decodedToken);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.CREATED,
+        success: true,
+        message: 'Password changed.',
+        data: result
+    });
+}));
 exports.UserControllers = {
     createUser: exports.createUser,
     updateUser: exports.updateUser,
     getAllUsers: exports.getAllUsers,
     getAllAgents: exports.getAllAgents,
-    becomeAnAgent: exports.becomeAnAgent
+    becomeAnAgent: exports.becomeAnAgent,
+    getMe: exports.getMe,
+    deleteUser: exports.deleteUser,
+    updateUserStatus: exports.updateUserStatus,
+    changeUserPassword: exports.changeUserPassword
 };

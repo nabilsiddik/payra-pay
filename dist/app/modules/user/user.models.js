@@ -42,15 +42,16 @@ const userSchema = new mongoose_1.Schema({
     },
     address: {
         type: String,
+        default: ''
     },
     isDateleted: {
         type: Boolean,
         default: false,
     },
-    isActive: {
+    status: {
         type: String,
-        enum: Object.values(user_interfaces_1.IsActive),
-        default: user_interfaces_1.IsActive.ACTIVE,
+        enum: Object.values(user_interfaces_1.Status),
+        default: user_interfaces_1.Status.ACTIVE,
     },
     role: {
         type: String,

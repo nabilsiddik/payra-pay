@@ -6,11 +6,12 @@ const agentRequest_interfaces_1 = require("./agentRequest.interfaces");
 const agentRequestSchema = new mongoose_1.Schema({
     user: {
         type: mongoose_1.Schema.Types.ObjectId,
-        enum: Object.values(agentRequest_interfaces_1.AgentRequestStatus),
+        ref: 'User',
         required: true,
     },
     status: {
         type: String,
+        enum: Object.values(agentRequest_interfaces_1.AgentRequestStatus),
         required: true,
         default: agentRequest_interfaces_1.AgentRequestStatus.PENDING
     }

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import statusCodes from 'http-status-codes'
 import { WalletServices } from "./wallet.services";
 import { CurentUser } from "./wallet.interfaces";
@@ -7,7 +7,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 
 // Get all wallets
-const getAllWallets = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const getAllWallets = catchAsync(async(req: Request, res: Response) => {
     const result = await WalletServices.getAllWallets()
 
     sendResponse(res, {
@@ -19,7 +19,7 @@ const getAllWallets = catchAsync(async(req: Request, res: Response, next: NextFu
 })
 
 // Get current user wallet
-const getSingleWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const getSingleWallet = catchAsync(async(req: Request, res: Response) => {
     const decodedToken = req.user as JwtPayload
     const result = await WalletServices.getSingleWallet(decodedToken)
 
@@ -32,7 +32,7 @@ const getSingleWallet = catchAsync(async(req: Request, res: Response, next: Next
 })
 
 // Block wallet
-const blockWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const blockWallet = catchAsync(async(req: Request, res: Response) => {
     const result = await WalletServices.blockWallet(req)
 
     sendResponse(res, {
@@ -45,7 +45,7 @@ const blockWallet = catchAsync(async(req: Request, res: Response, next: NextFunc
 
 
 // Unblock wallet
-const unblockWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const unblockWallet = catchAsync(async(req: Request, res: Response) => {
     const result = await WalletServices.unblockWallet(req)
 
     sendResponse(res, {
@@ -59,7 +59,7 @@ const unblockWallet = catchAsync(async(req: Request, res: Response, next: NextFu
 
 
 // Deactivate own wallet
-const deactivateOwnWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const deactivateOwnWallet = catchAsync(async(req: Request, res: Response) => {
     const result = await WalletServices.deactivateOwnWallet(req.user as CurentUser)
 
     sendResponse(res, {
@@ -72,7 +72,7 @@ const deactivateOwnWallet = catchAsync(async(req: Request, res: Response, next: 
 
 
 // Deactivate own wallet
-const activateOwnWallet = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const activateOwnWallet = catchAsync(async(req: Request, res: Response) => {
     const result = await WalletServices.activateOwnWallet(req.user as CurentUser)
 
     sendResponse(res, {

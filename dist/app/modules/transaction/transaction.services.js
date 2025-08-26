@@ -60,7 +60,7 @@ const appError_1 = __importDefault(require("../../errorHelpers/appError"));
 // get all transactions
 const getAllTransactions = (query) => __awaiter(void 0, void 0, void 0, function* () {
     // search, filter, sort, fields, paginate using query builder
-    const queryBuilder = new queryBuilder_1.QueryBuilder(transaction_models_1.default.find(), query);
+    const queryBuilder = new queryBuilder_1.QueryBuilder(transaction_models_1.default.find().populate("user", "name email"), query);
     const transactions = yield queryBuilder
         .search(transaction_constants_1.transactionSearchableFields)
         .filter()
@@ -81,6 +81,7 @@ const addMoneyToWallet = (req, payload, decodedToken) => __awaiter(void 0, void 
     // amount to be added
     const { balance } = payload;
     const userId = decodedToken.userId;
+    console.log(balance);
     if (balance === 0) {
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'Balance must be greater than 0.');
     }
@@ -234,7 +235,7 @@ const sendMoneyToAnotherWallet = (req, payload, decodedToken) => __awaiter(void 
     };
 });
 // Get all transaction history
-const getAllTransactionHistory = (req, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllTransactionHistory = (req, decodedToken, query) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = decodedToken.userId;
     const user = yield user_models_1.default.findById(userId);
     if (!user) {
@@ -242,17 +243,33 @@ const getAllTransactionHistory = (req, decodedToken) => __awaiter(void 0, void 0
     }
     // convert userId to an object id
     const objectUserId = new mongoose_1.Types.ObjectId(userId);
-    // gett logged in users transactions
-    const transactions = yield transaction_models_1.default.find({ user: objectUserId });
+    // search, filter, sort, fields, paginate using query builder
+    const queryBuilder = new queryBuilder_1.QueryBuilder(transaction_models_1.default.find({
+        $or: [{ user: objectUserId }, { agent: objectUserId }]
+    }).populate("user", "name email"), query);
+    const transactions = yield queryBuilder
+        .search(transaction_constants_1.transactionSearchableFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate();
     if (!transactions) {
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'No transaction available.');
     }
-    return transactions;
+    const [data, meta] = yield Promise.all([
+        transactions.build(),
+        queryBuilder.getMeta()
+    ]);
+    return {
+        transactions: data,
+        meta
+    };
 });
 // Cash in to any user wallet by an agent only
 const cashIn = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
     const { phone, amount } = payload;
     const userId = decodedToken.userId;
+    console.log(phone);
     if (!userId) {
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User is not available.');
     }
@@ -389,6 +406,7 @@ const cashOut = (payload, decodedToken) => __awaiter(void 0, void 0, void 0, fun
     // Create transaction
     const transactionPayload = {
         user: objectAgentId,
+        agent: userAgent._id,
         type: transaction_interfaces_1.TRANSACTION_TYPES.CASH_OUT,
         amount: cashOutAmount,
         totalAmountWithCharge: totalAmountWithCashOutCharge,
