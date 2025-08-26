@@ -12,10 +12,23 @@ const PORT = process.env.PORT || 5000;
 
 dotenv.config();
 app.use(express.json());
+
+const allowedOrigins = ['http://localhost:5173'];
+
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow non-browser tools like Postman
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
+
+
 app.use(cookieParser())
 app.use(passport.initialize())
 

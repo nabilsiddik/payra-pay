@@ -48,6 +48,7 @@ const createUser = async (payload: IUser) => {
     const newUser = await User.create(user)
     newUser.save()
 
+    
 
     // Creating a wallet automatically for users and agents
     const walletPayload = {

@@ -497,6 +497,7 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
     // Create transaction
     const transactionPayload = {
         user: objectAgentId,
+        agent: userAgent._id,
         type: TRANSACTION_TYPES.CASH_OUT,
         amount: cashOutAmount,
         totalAmountWithCharge: totalAmountWithCashOutCharge,

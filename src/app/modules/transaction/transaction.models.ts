@@ -28,6 +28,9 @@ const transactionSchema = new Schema({
         required: true,
         ref: 'User'
     },
+    agent: {
+        type: Schema.Types.ObjectId,
+    },
     type: {
         type: String,
         required: true,

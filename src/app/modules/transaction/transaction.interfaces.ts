@@ -33,6 +33,7 @@ export interface ITransactionParameters {
 
 export interface ITransaction {
     user: Types.ObjectId,
+    agent: Types.ObjectId,
     type: TRANSACTION_TYPES,
     status: TRANSACTION_STATUS,
     amount: number,
