@@ -9,11 +9,9 @@ import './app/config/passport'
 import cookieParser from "cookie-parser";
 const PORT = process.env.PORT || 5000;
 
-
-dotenv.config();
-app.use(express.json());
-
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',');
+
+console.log('allowed origins', allowedOrigins)
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -26,6 +24,10 @@ app.use(cors({
   },
   credentials: true
 }));
+
+dotenv.config();
+app.use(express.json());
+
 
 
 app.use(cookieParser())
