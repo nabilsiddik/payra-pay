@@ -13,16 +13,15 @@ const PORT = process.env.PORT || 5000;
 dotenv.config();
 app.use(express.json());
 
-const allowedOrigins = ['http://localhost:5173'];
-
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',');
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // allow non-browser tools like Postman
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true
