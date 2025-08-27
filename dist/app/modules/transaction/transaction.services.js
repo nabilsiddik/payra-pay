@@ -61,16 +61,19 @@ const appError_1 = __importDefault(require("../../errorHelpers/appError"));
 const getAllTransactions = (query) => __awaiter(void 0, void 0, void 0, function* () {
     // search, filter, sort, fields, paginate using query builder
     const queryBuilder = new queryBuilder_1.QueryBuilder(transaction_models_1.default.find().populate("user", "name email"), query);
-    const transactions = yield queryBuilder
+    queryBuilder
         .search(transaction_constants_1.transactionSearchableFields)
         .filter()
         .sort()
-        .fields()
-        .paginate();
-    const [data, meta] = yield Promise.all([
-        transactions.build(),
-        queryBuilder.getMeta()
-    ]);
+        .fields();
+    let data;
+    if (query.all === "true") {
+        data = yield queryBuilder.build();
+    }
+    else {
+        data = yield queryBuilder.paginate().build();
+    }
+    const meta = yield queryBuilder.getMeta();
     return {
         transactions: data,
         meta

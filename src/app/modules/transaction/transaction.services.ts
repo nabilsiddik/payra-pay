@@ -16,20 +16,30 @@ import AppError from "../../errorHelpers/appError";
 // get all transactions
 const getAllTransactions = async (query: Record<string, string>) => {
     // search, filter, sort, fields, paginate using query builder
-    const queryBuilder = new QueryBuilder(Transaction.find().populate("user", "name email"), query)
+    const queryBuilder = new QueryBuilder(
+        Transaction.find().populate("user", "name email"),
+        query
+    )
 
-    const transactions = await queryBuilder
+    queryBuilder
         .search(transactionSearchableFields)
         .filter()
         .sort()
         .fields()
-        .paginate()
 
 
-    const [data, meta] = await Promise.all([
-        transactions.build(),
-        queryBuilder.getMeta()
-    ])
+    let data
+
+    if (query.all === "true") {
+        data = await queryBuilder.build()
+    } else {
+        data = await queryBuilder.paginate().build()
+    }
+
+    const meta = await queryBuilder.getMeta()
+
+    console.log('transactions', data)
+    console.log('meta', meta)
 
     return {
         transactions: data,
