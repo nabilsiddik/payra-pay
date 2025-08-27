@@ -56,12 +56,12 @@ const logOut = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void
     res.clearCookie("accessToken", {
         httpOnly: true,
         secure: env_1.enVars.NODE_ENV === 'production',
-        sameSite: false,
+        sameSite: 'none',
     });
     res.clearCookie("refreshToken", {
         httpOnly: true,
         secure: false,
-        sameSite: false,
+        sameSite: 'none',
     });
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,

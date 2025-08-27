@@ -19,18 +19,18 @@ const getAllTransactions = async (query: Record<string, string>) => {
     const queryBuilder = new QueryBuilder(Transaction.find().populate("user", "name email"), query)
 
     const transactions = await queryBuilder
-    .search(transactionSearchableFields)
-    .filter()
-    .sort()
-    .fields()
-    .paginate()
+        .search(transactionSearchableFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate()
 
 
     const [data, meta] = await Promise.all([
         transactions.build(),
         queryBuilder.getMeta()
     ])
-    
+
     return {
         transactions: data,
         meta
@@ -255,7 +255,7 @@ const sendMoneyToAnotherWallet = async (req: Request, payload: Partial<ITransact
 
 
 // Get all transaction history
-const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload, query : Record<string, string>) => {
+const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload, query: Record<string, string>) => {
 
     const userId = decodedToken.userId
 
@@ -265,21 +265,31 @@ const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload, 
         throw new AppError(StatusCodes.BAD_REQUEST, 'User is not available.')
     }
 
+    console.log('user is ..', user.role, userId)
+
+
     // convert userId to an object id
     const objectUserId = new Types.ObjectId(userId)
 
+    const baseQuery = {
+        $or: [
+            { user: objectUserId },
+            { agent: objectUserId }
+        ]
+    }
 
     // search, filter, sort, fields, paginate using query builder
-    const queryBuilder = new QueryBuilder(Transaction.find({ 
-        $or: [{user: objectUserId}, {agent: objectUserId}]
-     }).populate("user", "name email"), query)
+    const queryBuilder = new QueryBuilder(
+        Transaction.find(baseQuery).populate("user", "name email"),
+        query
+    )
 
     const transactions = await queryBuilder
-    .search(transactionSearchableFields)
-    .filter()
-    .sort()
-    .fields()
-    .paginate()
+        .search(transactionSearchableFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate()
 
 
     if (!transactions) {
@@ -290,7 +300,7 @@ const getAllTransactionHistory = async (req: Request, decodedToken: JwtPayload, 
         transactions.build(),
         queryBuilder.getMeta()
     ])
-    
+
     return {
         transactions: data,
         meta
@@ -411,7 +421,7 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
 
     // calculate cash out charge
     const cashOutCharge = Number(cashOutAmount) * (Number(cashOutChargeInPercentage) / 100)
-    
+
     // Agents commision
     const agentCommision = cashOutCharge * (Number(agentCommistionInPercentage) / 100)
 
@@ -515,8 +525,8 @@ const cashOut = async (payload: ICashOutPayload, decodedToken: JwtPayload) => {
 
     // Update agent total commision
     const updatedAgentWallet = await Wallet.findOneAndUpdate({ user: userAgent._id }, {
-        $inc: {totalCommision: agentCommision}
-    }, {new: true, runValidators: true})
+        $inc: { totalCommision: agentCommision }
+    }, { new: true, runValidators: true })
 
     return {
         cashOutUserWallet,
