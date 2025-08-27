@@ -60,7 +60,7 @@ const logOut = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void
     });
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: false,
+        secure: env_1.enVars.NODE_ENV === 'production',
         sameSite: 'none',
     });
     (0, sendResponse_1.sendResponse)(res, {

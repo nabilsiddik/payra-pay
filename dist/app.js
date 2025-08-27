@@ -18,7 +18,8 @@ exports.app.set('trust proxy', 1);
 exports.app.use((0, cors_1.default)({
     origin: [
         "https://parya-pay-frontend.vercel.app",
-        "http://localhost:5173"
+        "http://localhost:5173",
+        "http://localhost:5174"
     ],
     credentials: true,
 }));

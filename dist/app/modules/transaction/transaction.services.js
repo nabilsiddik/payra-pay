@@ -241,12 +241,17 @@ const getAllTransactionHistory = (req, decodedToken, query) => __awaiter(void 0,
     if (!user) {
         throw new appError_1.default(http_status_codes_1.default.BAD_REQUEST, 'User is not available.');
     }
+    console.log('user is ..', user.role, userId);
     // convert userId to an object id
     const objectUserId = new mongoose_1.Types.ObjectId(userId);
+    const baseQuery = {
+        $or: [
+            { user: objectUserId },
+            { agent: objectUserId }
+        ]
+    };
     // search, filter, sort, fields, paginate using query builder
-    const queryBuilder = new queryBuilder_1.QueryBuilder(transaction_models_1.default.find({
-        $or: [{ user: objectUserId }, { agent: objectUserId }]
-    }).populate("user", "name email"), query);
+    const queryBuilder = new queryBuilder_1.QueryBuilder(transaction_models_1.default.find(baseQuery).populate("user", "name email"), query);
     const transactions = yield queryBuilder
         .search(transaction_constants_1.transactionSearchableFields)
         .filter()

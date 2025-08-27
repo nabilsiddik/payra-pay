@@ -16,6 +16,7 @@ class QueryBuilder {
     constructor(modelQuery, query) {
         this.modelQuery = modelQuery;
         this.query = query;
+        this.baseConditions = this.modelQuery._conditions || {};
     }
     // Implement filtering
     filter() {
@@ -23,21 +24,24 @@ class QueryBuilder {
         for (const field of constants_1.excludeFields) {
             delete filter[field];
         }
-        this.modelQuery = this.modelQuery.find(filter);
+        this.modelQuery = this.modelQuery.find({
+            $and: [this.baseConditions, filter]
+        });
         return this;
     }
     // Implement searching
     search(searchableFields) {
         const searchTerm = this.query.searchTerm || "";
+        if (!searchTerm)
+            return this;
         const searchQuery = {
             $or: searchableFields.map(field => ({
-                [field]: {
-                    $regex: searchTerm,
-                    $options: 'i'
-                }
+                [field]: { $regex: searchTerm, $options: 'i' }
             }))
         };
-        this.modelQuery = this.modelQuery.find(searchQuery);
+        this.modelQuery = this.modelQuery.find({
+            $and: [this.baseConditions, searchQuery]
+        });
         return this;
     }
     // sorting
